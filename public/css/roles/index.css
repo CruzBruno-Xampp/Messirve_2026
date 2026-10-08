@@ -1,0 +1,901 @@
+/*
+ * Pantalla de administración de roles y permisos.
+ * Complementa css/productos/catalogo.css para conservar la identidad visual.
+ */
+
+.pagina-roles {
+    width: min(1640px, calc(100% - 40px));
+}
+
+.boton__simbolo {
+    display: inline-grid;
+    width: 21px;
+    height: 21px;
+    margin-right: 8px;
+    place-items: center;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    font-size: 1rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.alerta--lista ul {
+    margin: 7px 0 0;
+    padding-left: 20px;
+}
+
+.alerta--lista li + li {
+    margin-top: 4px;
+}
+
+.resumen--roles {
+    grid-template-columns: 0.75fr 0.85fr 1.8fr;
+}
+
+.roles-distribucion {
+    display: grid;
+    grid-template-columns: minmax(330px, 0.78fr) minmax(560px, 1.72fr);
+    align-items: start;
+    gap: 22px;
+}
+
+.roles-distribucion > .panel {
+    min-width: 0;
+    margin-bottom: 0;
+}
+
+.panel__cabecera--roles {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.lista-roles {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px;
+}
+
+.tarjeta-rol {
+    display: grid;
+    grid-template-columns: 43px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    min-height: 104px;
+    padding: 14px;
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    background: var(--blanco);
+    transition:
+        border-color 0.18s ease,
+        background-color 0.18s ease,
+        box-shadow 0.18s ease,
+        transform 0.18s ease;
+}
+
+.tarjeta-rol:hover {
+    border-color: #a9c8e7;
+    background: #f8fbff;
+    transform: translateY(-1px);
+}
+
+.tarjeta-rol:focus-visible {
+    outline: none;
+    border-color: var(--azul-principal);
+    box-shadow: 0 0 0 4px rgba(65, 152, 232, 0.14);
+}
+
+.tarjeta-rol--activa {
+    border-color: var(--azul-principal);
+    background: var(--azul-suave);
+    box-shadow: 0 7px 18px rgba(65, 152, 232, 0.13);
+}
+
+.tarjeta-rol__icono {
+    display: grid;
+    width: 43px;
+    height: 43px;
+    place-items: center;
+    border-radius: 11px;
+    background: #edf3fa;
+    color: var(--azul-medio);
+}
+
+.tarjeta-rol--activa .tarjeta-rol__icono {
+    background: var(--azul-medio);
+    color: var(--amarillo);
+}
+
+.tarjeta-rol__icono svg {
+    width: 25px;
+    height: 25px;
+    fill: currentColor;
+}
+
+.tarjeta-rol__contenido {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+}
+
+.tarjeta-rol__nombre {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+    color: var(--azul-oscuro);
+    font-size: 0.86rem;
+    font-weight: 900;
+}
+
+.tarjeta-rol__descripcion {
+    display: -webkit-box;
+    overflow: hidden;
+    margin-top: 5px;
+    color: var(--texto-secundario);
+    font-size: 0.72rem;
+    line-height: 1.4;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+}
+
+.tarjeta-rol__datos {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    color: #49617d;
+    font-size: 0.68rem;
+    font-weight: 750;
+}
+
+.insignia {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 7px;
+    border-radius: 999px;
+    font-size: 0.58rem;
+    font-weight: 900;
+    letter-spacing: 0.035em;
+    text-transform: uppercase;
+}
+
+.insignia--protegido {
+    background: var(--amarillo-suave);
+    color: #7d6200;
+}
+
+.estado-rol {
+    display: inline-flex;
+    min-width: 61px;
+    min-height: 28px;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.estado-rol--activo {
+    background: var(--exito-fondo);
+    color: var(--exito);
+}
+
+.estado-rol--inactivo {
+    background: var(--error-fondo);
+    color: var(--error);
+}
+
+.roles-vacio {
+    padding: 42px 24px;
+    color: var(--texto-secundario);
+    text-align: center;
+}
+
+.roles-vacio strong {
+    display: block;
+    color: var(--azul-oscuro);
+}
+
+.roles-vacio p {
+    margin: 7px 0 0;
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+
+.roles-vacio--grande {
+    padding-top: 90px;
+    padding-bottom: 90px;
+}
+
+.detalle-rol {
+    padding: 24px;
+}
+
+.detalle-rol--protegido {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.aviso-protegido {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 18px;
+    border: 1px solid #eacb64;
+    border-radius: 12px;
+    background: var(--amarillo-suave);
+}
+
+.aviso-protegido__icono {
+    display: grid;
+    flex: 0 0 39px;
+    width: 39px;
+    height: 39px;
+    place-items: center;
+    border-radius: 10px;
+    background: var(--amarillo);
+    color: var(--azul-oscuro);
+}
+
+.aviso-protegido__icono svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+}
+
+.aviso-protegido strong {
+    display: block;
+    color: var(--azul-oscuro);
+    font-size: 0.86rem;
+}
+
+.aviso-protegido p {
+    margin: 5px 0 0;
+    color: #665a31;
+    font-size: 0.76rem;
+    line-height: 1.5;
+}
+
+.datos-rol-protegido {
+    display: grid;
+    grid-template-columns: 1.4fr 0.8fr 0.65fr;
+    gap: 12px;
+}
+
+.datos-rol-protegido > div {
+    padding: 14px 16px;
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    background: #f8fafc;
+}
+
+.datos-rol-protegido span,
+.datos-rol-protegido strong {
+    display: block;
+}
+
+.datos-rol-protegido span {
+    margin-bottom: 6px;
+    color: var(--texto-secundario);
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.datos-rol-protegido strong {
+    color: var(--azul-oscuro);
+    font-size: 0.86rem;
+}
+
+.formulario-rol__datos {
+    display: grid;
+    grid-template-columns: minmax(190px, 0.8fr) minmax(280px, 1.35fr) minmax(160px, 0.55fr);
+    align-items: start;
+    gap: 16px;
+}
+
+.campo textarea {
+    display: block;
+    width: 100%;
+    min-height: 86px;
+    resize: vertical;
+    padding: 12px 13px;
+    border: 1px solid #cdd7e4;
+    border-radius: 9px;
+    outline: none;
+    background: var(--blanco);
+    color: var(--texto);
+    font: inherit;
+    font-size: 0.84rem;
+    line-height: 1.45;
+    transition:
+        border-color 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.campo textarea:focus {
+    border-color: var(--azul-principal);
+    box-shadow: 0 0 0 4px rgba(65, 152, 232, 0.14);
+}
+
+.campo textarea::placeholder {
+    color: #9aa6b8;
+}
+
+.campo > small {
+    display: block;
+    margin-top: 6px;
+    color: var(--texto-secundario);
+    font-size: 0.66rem;
+}
+
+.campo__etiqueta {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--azul-oscuro);
+    font-size: 0.76rem;
+    font-weight: 800;
+}
+
+.interruptor {
+    position: relative;
+    display: flex;
+    min-height: 48px;
+    align-items: center;
+    gap: 10px;
+    padding: 0 13px;
+    border: 1px solid #cdd7e4;
+    border-radius: 9px;
+    cursor: pointer;
+    background: var(--blanco);
+}
+
+.interruptor input[type="checkbox"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.interruptor__control {
+    position: relative;
+    display: block;
+    flex: 0 0 38px;
+    width: 38px;
+    height: 22px;
+    border-radius: 999px;
+    background: #aab5c4;
+    transition: background-color 0.18s ease;
+}
+
+.interruptor__control::after {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--blanco);
+    box-shadow: 0 2px 5px rgba(16, 44, 100, 0.2);
+    content: "";
+    transition: transform 0.18s ease;
+}
+
+.interruptor input[type="checkbox"]:checked + .interruptor__control {
+    background: var(--exito);
+}
+
+.interruptor input[type="checkbox"]:checked + .interruptor__control::after {
+    transform: translateX(16px);
+}
+
+.interruptor input[type="checkbox"]:focus-visible + .interruptor__control {
+    box-shadow: 0 0 0 4px rgba(65, 152, 232, 0.18);
+}
+
+.interruptor__texto {
+    color: var(--texto);
+    font-size: 0.76rem;
+    font-weight: 750;
+}
+
+.seccion-permisos {
+    margin-top: 24px;
+    padding-top: 22px;
+    border-top: 1px solid var(--borde);
+}
+
+.detalle-rol--protegido .seccion-permisos {
+    margin-top: 0;
+}
+
+.seccion-permisos__encabezado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.seccion-permisos__encabezado h3 {
+    margin: 0;
+    color: var(--azul-oscuro);
+    font-size: 0.94rem;
+}
+
+.seccion-permisos__encabezado p {
+    margin: 5px 0 0;
+    color: var(--texto-secundario);
+    font-size: 0.72rem;
+}
+
+.contador-permisos {
+    flex-shrink: 0;
+    padding: 7px 10px;
+    border-radius: 999px;
+    background: var(--azul-suave);
+    color: var(--azul-oscuro);
+    font-size: 0.68rem;
+    font-weight: 900;
+}
+
+.permisos-grilla {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 13px;
+}
+
+.grupo-permisos {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--borde);
+    border-radius: 11px;
+    background: #fbfcfe;
+}
+
+fieldset.grupo-permisos {
+    padding-top: 0;
+}
+
+.grupo-permisos__titulo {
+    display: flex;
+    width: 100%;
+    min-height: 43px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 0;
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--borde);
+    background: #f1f6fb;
+    color: var(--azul-oscuro);
+    font-size: 0.72rem;
+    font-weight: 900;
+}
+
+legend.grupo-permisos__titulo {
+    float: left;
+}
+
+legend.grupo-permisos__titulo + .grupo-permisos__opciones {
+    clear: both;
+}
+
+.grupo-permisos__titulo > span:last-child:not(:first-child) {
+    display: inline-grid;
+    min-width: 23px;
+    height: 23px;
+    place-items: center;
+    border-radius: 999px;
+    background: #dceafa;
+    font-size: 0.65rem;
+}
+
+.boton-seleccionar-grupo {
+    padding: 4px 7px;
+    border: 0;
+    border-radius: 6px;
+    cursor: pointer;
+    background: transparent;
+    color: var(--azul-principal);
+    font-size: 0.62rem;
+    font-weight: 850;
+}
+
+.boton-seleccionar-grupo:hover {
+    background: #dceafa;
+}
+
+.boton-seleccionar-grupo:focus-visible {
+    outline: 2px solid var(--azul-principal);
+    outline-offset: 1px;
+}
+
+.grupo-permisos__opciones {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+}
+
+.permiso-opcion {
+    position: relative;
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    align-items: start;
+    gap: 9px;
+    padding: 10px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    background: var(--blanco);
+    transition:
+        border-color 0.18s ease,
+        background-color 0.18s ease;
+}
+
+.permiso-opcion:hover {
+    border-color: #bdd7ee;
+    background: #f7fbff;
+}
+
+.permiso-opcion:has(input:checked) {
+    border-color: #a9ceef;
+    background: var(--azul-suave);
+}
+
+.permiso-opcion input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.permiso-opcion__marca {
+    display: grid;
+    width: 22px;
+    height: 22px;
+    place-items: center;
+    border: 1px solid #adbbcb;
+    border-radius: 6px;
+    background: var(--blanco);
+    color: transparent;
+    font-size: 0.72rem;
+    font-weight: 900;
+    transition:
+        border-color 0.18s ease,
+        background-color 0.18s ease,
+        color 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.permiso-opcion input:checked + .permiso-opcion__marca,
+.permiso-opcion--consulta .permiso-opcion__marca {
+    border-color: var(--azul-principal);
+    background: var(--azul-principal);
+    color: var(--blanco);
+}
+
+.permiso-opcion input:focus-visible + .permiso-opcion__marca {
+    box-shadow: 0 0 0 4px rgba(65, 152, 232, 0.18);
+}
+
+.permiso-opcion__texto {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+}
+
+.permiso-opcion__texto strong {
+    color: var(--azul-oscuro);
+    font-size: 0.73rem;
+    line-height: 1.35;
+}
+
+.permiso-opcion__texto small {
+    margin-top: 3px;
+    color: var(--texto-secundario);
+    font-size: 0.65rem;
+    line-height: 1.4;
+}
+
+.permiso-opcion__texto code {
+    width: fit-content;
+    margin-top: 6px;
+    padding: 3px 6px;
+    border-radius: 5px;
+    background: #eef2f7;
+    color: #4b5b72;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 0.59rem;
+}
+
+.permiso-opcion--consulta {
+    cursor: default;
+}
+
+.permiso-opcion--consulta:hover {
+    border-color: transparent;
+    background: var(--blanco);
+}
+
+.detalle-rol__pie {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin: 24px -24px -24px;
+    padding: 18px 24px;
+    border-top: 1px solid var(--borde);
+    background: #f8fafc;
+}
+
+.detalle-rol__pie p {
+    margin: 0;
+    color: var(--texto-secundario);
+    font-size: 0.73rem;
+}
+
+.detalle-rol__pie p strong {
+    color: var(--azul-oscuro);
+}
+
+.modal-rol {
+    width: min(1040px, calc(100% - 32px));
+    max-width: 1040px;
+    max-height: calc(100vh - 32px);
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid #bdcde0;
+    border-radius: 16px;
+    background: var(--blanco);
+    color: var(--texto);
+    box-shadow: 0 24px 70px rgba(9, 30, 68, 0.3);
+}
+
+.modal-rol::backdrop {
+    background: rgba(8, 24, 53, 0.58);
+    backdrop-filter: blur(2px);
+}
+
+.modal-rol__contenido {
+    display: flex;
+    max-height: calc(100vh - 32px);
+    flex-direction: column;
+}
+
+.modal-rol__cabecera {
+    display: flex;
+    flex-shrink: 0;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 21px 24px;
+    border-bottom: 1px solid var(--borde);
+    background:
+        linear-gradient(
+            90deg,
+            rgba(65, 152, 232, 0.13),
+            rgba(255, 255, 255, 0)
+        );
+}
+
+.modal-rol__paso {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--azul-principal);
+    font-size: 0.65rem;
+    font-weight: 900;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.modal-rol__cabecera h2 {
+    margin: 0;
+    color: var(--azul-oscuro);
+    font-size: 1.25rem;
+}
+
+.modal-rol__cabecera p {
+    margin: 6px 0 0;
+    color: var(--texto-secundario);
+    font-size: 0.76rem;
+}
+
+.modal-rol__cerrar {
+    display: grid;
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    padding: 0;
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    cursor: pointer;
+    background: var(--blanco);
+    color: var(--texto-secundario);
+    font-size: 1.35rem;
+    line-height: 1;
+}
+
+.modal-rol__cerrar:hover {
+    border-color: #efb1ac;
+    background: var(--error-fondo);
+    color: var(--error);
+}
+
+.modal-rol__cuerpo {
+    min-height: 0;
+    overflow-y: auto;
+    padding: 22px 24px 24px;
+}
+
+.formulario-rol__datos--modal {
+    grid-template-columns: minmax(190px, 0.9fr) minmax(300px, 1.45fr) minmax(170px, 0.65fr);
+}
+
+.seccion-permisos--modal {
+    margin-top: 21px;
+}
+
+.errores-modal {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 17px;
+    padding: 12px 14px;
+    border: 1px solid #efb1ac;
+    border-radius: 9px;
+    background: var(--error-fondo);
+    color: var(--error);
+    font-size: 0.73rem;
+}
+
+.modal-rol__pie {
+    display: flex;
+    flex-shrink: 0;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 15px 24px;
+    border-top: 1px solid var(--borde);
+    background: #f8fafc;
+}
+
+@media (max-width: 1240px) {
+    .roles-distribucion {
+        grid-template-columns: minmax(300px, 0.72fr) minmax(520px, 1.28fr);
+    }
+
+    .formulario-rol__datos {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .campo--estado {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 1050px) {
+    .resumen--roles {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .resumen--roles .resumen__tarjeta--informativa {
+        grid-column: 1 / -1;
+    }
+
+    .roles-distribucion {
+        grid-template-columns: 1fr;
+    }
+
+    .lista-roles {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .pagina-roles {
+        width: min(100% - 24px, 1640px);
+    }
+
+    .resumen--roles,
+    .lista-roles,
+    .permisos-grilla,
+    .datos-rol-protegido,
+    .formulario-rol__datos,
+    .formulario-rol__datos--modal {
+        grid-template-columns: 1fr;
+    }
+
+    .resumen--roles .resumen__tarjeta--informativa,
+    .campo--estado {
+        grid-column: auto;
+    }
+
+    .panel__cabecera--roles,
+    .seccion-permisos__encabezado,
+    .detalle-rol__pie {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .detalle-rol__pie .boton {
+        width: 100%;
+    }
+
+    .modal-rol {
+        width: min(100% - 16px, 1040px);
+        max-height: calc(100vh - 16px);
+    }
+
+    .modal-rol__contenido {
+        max-height: calc(100vh - 16px);
+    }
+}
+
+@media (max-width: 520px) {
+    .detalle-rol,
+    .modal-rol__cuerpo {
+        padding-right: 16px;
+        padding-left: 16px;
+    }
+
+    .detalle-rol__pie {
+        margin-right: -16px;
+        margin-left: -16px;
+        padding-right: 16px;
+        padding-left: 16px;
+    }
+
+    .tarjeta-rol {
+        grid-template-columns: 39px minmax(0, 1fr);
+    }
+
+    .tarjeta-rol__icono {
+        width: 39px;
+        height: 39px;
+    }
+
+    .tarjeta-rol > .estado-rol {
+        grid-column: 2;
+        justify-self: start;
+    }
+
+    .modal-rol__cabecera,
+    .modal-rol__pie {
+        padding-right: 16px;
+        padding-left: 16px;
+    }
+
+    .modal-rol__pie {
+        align-items: stretch;
+        flex-direction: column-reverse;
+    }
+
+    .modal-rol__pie .boton {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tarjeta-rol,
+    .interruptor__control,
+    .interruptor__control::after,
+    .permiso-opcion,
+    .permiso-opcion__marca {
+        transition: none;
+    }
+}

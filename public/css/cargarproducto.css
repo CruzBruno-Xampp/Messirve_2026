@@ -1,0 +1,1149 @@
+/* =======================================
+   RESET
+======================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+}
+
+body{
+    background:#F4F7FC;
+    color:#333;
+}
+
+/* =======================================
+   COLORES
+======================================= */
+
+:root{
+
+    --celeste:#0D2F8F;
+    --azul:#4C9BF0;
+    --dorado:#FFC107;
+    --blanco:#FFFFFF;
+    --gris:#F5F7FA;
+    --gris-borde:#DCE3ED;
+    --texto:#344054;
+    --hover:#2E7FE8;
+
+}
+
+/* =======================================
+   CONTENEDOR GENERAL
+======================================= */
+
+.contenedor{
+
+    display:flex;
+    min-height:100vh;
+
+}
+
+/* =======================================
+   SIDEBAR
+======================================= */
+
+.sidebar{
+
+    width:240px;
+    background: #4A98E8;
+    color:white;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    box-shadow:3px 0 15px rgba(0,0,0,.15);
+
+}
+
+/* =======================================
+   LOGO
+======================================= */
+
+.logo{
+
+    padding:30px 20px;
+    text-align:center;
+    margin-top: -10px;
+
+}
+.logo h3{
+    margin-top: -55px;
+    font-size: 25px;
+    margin-left: 30px;
+    color: #22327E;
+}
+
+.logo h3 span{
+    color: white;
+}
+.logo h6{
+    margin-left: 20px;
+  
+}
+
+.logo img{
+
+    width:50px;
+    margin-left: -150px;
+    transform: rotate(20deg);
+}
+
+/* =======================================
+   MENU
+======================================= */
+
+.sidebar nav{
+
+    flex:1;
+    margin-top:20px;
+
+}
+
+.sidebar ul{
+
+    list-style:none;
+
+}
+
+.sidebar li{
+
+    margin:8px 12px;
+
+}
+
+.sidebar li a{
+
+    display:flex;
+    align-items:center;
+    gap:14px;
+
+    padding:14px 18px;
+
+    text-decoration:none;
+
+    color:white;
+
+    border-radius:12px;
+
+    transition:.30s;
+
+    font-size:17px;
+
+    font-weight:500;
+
+}
+
+.sidebar li img{
+
+    width:22px;
+    height:22px;
+
+}
+
+.sidebar li:hover a{
+
+    background:rgba(76,155,240,.25);
+
+}
+
+.sidebar li.activo a{
+
+    background:var(--celeste);
+
+    box-shadow:0 6px 18px rgba(76,155,240,.45);
+
+}
+
+/* =======================================
+   CONTENIDO
+======================================= */
+
+.contenido{
+
+    flex:1;
+    display:flex;
+    flex-direction:column;
+
+}
+
+/* =======================================
+   HEADER
+======================================= */
+
+.header{
+
+    height:82px;
+
+    background: linear-gradient(90deg, #1E3A8A 0%, #4A98E8 50%, #FFFFFF 100%);
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:0 35px;
+
+    box-shadow:0 4px 15px rgba(0,0,0,.12);
+
+}
+
+/* =======================================
+   TITULO
+======================================= */
+
+.titulo{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+}
+
+.titulo img{
+
+    width:38px;
+
+}
+
+.titulo h1{
+
+    color:white;
+
+    font-size:34px;
+
+    font-weight:700;
+
+}
+
+/* =======================================
+   USUARIO
+======================================= */
+
+.usuario{
+
+    display:flex;
+
+    align-items:center;
+
+   
+
+    color:black;
+
+    font-size:18px;
+
+}
+
+.usuario img{
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    padding:3px;
+    margin-left: -50px;
+}
+
+/* =======================================
+   CARD PRINCIPAL
+======================================= */
+
+.card{
+
+    margin:30px;
+
+    background:white;
+
+    border-radius:18px;
+
+    padding:35px;
+
+    box-shadow:0 10px 35px rgba(0,0,0,.08);
+
+}
+
+.card h2{
+
+    color:var(--celeste);
+
+    font-size:28px;
+
+    margin-bottom:35px;
+
+    border-bottom:2px solid #EEF2F7;
+
+    padding-bottom:18px;
+
+    margin-top: -35px;
+
+}
+
+/*======================================
+    FORMULARIO
+======================================*/
+
+.formulario{
+
+    display:grid;
+    grid-template-columns: 1fr 1fr 340px;
+    gap:35px;
+    align-items:flex-start;
+
+}
+
+/*======================================
+    COLUMNAS
+======================================*/
+
+.izquierda,
+.centro,
+.derecha{
+
+    display:flex;
+    flex-direction:column;
+    gap:22px;
+
+}
+
+/*======================================
+    GRUPOS
+======================================*/
+
+.grupo{
+
+    display:flex;
+    flex-direction:column;
+
+}
+
+.grupo label{
+
+    margin-bottom:8px;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    color:var(--texto);
+
+}
+
+/*======================================
+    INPUTS
+======================================*/
+
+.grupo input{
+
+    height:52px;
+
+    border:1px solid var(--gris-borde);
+
+    border-radius:10px;
+
+    padding:0 18px;
+
+    font-size:15px;
+
+    background:white;
+
+    transition:.25s;
+
+}
+
+/*======================================
+    TEXTAREA
+======================================*/
+
+.grupo textarea{
+
+    min-height:90px;
+
+    resize:none;
+
+    border:1px solid var(--gris-borde);
+
+    border-radius:10px;
+
+    padding:15px 18px;
+
+    font-size:15px;
+
+    transition:.25s;
+
+}
+
+/*======================================
+    SELECT
+======================================*/
+
+.grupo select{
+
+    height:52px;
+
+    border:1px solid var(--gris-borde);
+
+    border-radius:10px;
+
+    padding:0 16px;
+
+    font-size:15px;
+
+    background:white;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+/*======================================
+    FOCUS
+======================================*/
+
+.grupo input:focus,
+.grupo textarea:focus,
+.grupo select:focus{
+
+    outline:none;
+
+    border:1px solid var(--celeste);
+
+    box-shadow:0 0 0 4px rgba(76,155,240,.15);
+
+}
+
+/*======================================
+    PLACEHOLDER
+======================================*/
+
+::placeholder{
+
+    color:#9AA4B2;
+
+}
+
+/*======================================
+    CAMPOS NUMÉRICOS
+======================================*/
+
+input[type="number"]{
+
+    text-align:left;
+
+}
+
+/*======================================
+    EFECTO HOVER
+======================================*/
+
+.grupo input:hover,
+.grupo textarea:hover,
+.grupo select:hover{
+
+    border-color:var(--celeste);
+
+}
+
+/*======================================
+    SEGUNDA FILA
+======================================*/
+
+.fila2{
+
+    margin-top:35px;
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:28px;
+
+}
+
+/*======================================
+    ESTADO
+======================================*/
+
+.estado{
+
+    margin-top:35px;
+
+}
+
+.estado>label{
+
+    display:block;
+
+    font-size:16px;
+
+    font-weight:600;
+
+    margin-bottom:15px;
+
+}
+
+.radio{
+
+    display:flex;
+
+    gap:30px;
+
+}
+
+.radio label{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    font-size:16px;
+
+    cursor:pointer;
+
+}
+
+.radio input{
+
+    width:18px;
+
+    height:18px;
+
+    accent-color:var(--celeste);
+
+}
+
+/*======================================
+    BOTONES
+======================================*/
+
+.botones{
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    gap:18px;
+
+    margin-top:45px;
+
+}
+
+/*======================================
+    BOTONES GENERALES
+======================================*/
+
+.botones button{
+
+    min-width:150px;
+
+    height:52px;
+
+    border:none;
+
+    border-radius:10px;
+
+    font-size:16px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+/*======================================
+    GUARDAR
+======================================*/
+
+.guardar{
+
+    background:var(--celeste);
+
+    color:white;
+
+}
+
+.guardar:hover{
+
+    background:#2F86E8;
+
+    transform:translateY(-2px);
+
+    box-shadow:0 10px 25px rgba(76,155,240,.35);
+
+}
+
+/*======================================
+    LIMPIAR
+======================================*/
+
+.limpiar{
+
+    background:var(--dorado);
+
+    color:#222;
+
+}
+
+.limpiar:hover{
+
+    background:#E8B100;
+
+    transform:translateY(-2px);
+
+}
+
+/*======================================
+    CANCELAR
+======================================*/
+
+.cancelar{
+
+    background:#ECEFF4;
+
+    color:#444;
+
+}
+
+.cancelar:hover{
+
+    background:#DDE4ED;
+
+    transform:translateY(-2px);
+
+}
+
+/*======================================
+    IMAGEN DEL PRODUCTO
+======================================*/
+
+.derecha{
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+
+}
+
+.derecha label{
+
+    align-self:flex-start;
+    margin-bottom:10px;
+    font-size:15px;
+    font-weight:600;
+    color:var(--texto);
+
+}
+
+.imagen{
+
+    width:100%;
+    max-width:300px;
+    aspect-ratio:1/1;
+
+    border:2px dashed var(--celeste);
+    border-radius:15px;
+
+    background:#F8FBFF;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    overflow:hidden;
+
+    transition:.3s;
+
+}
+
+.imagen:hover{
+
+    background:#EEF7FF;
+    border-color:var(--dorado);
+
+}
+
+.imagen img{
+
+    width:70%;
+    height:auto;
+    object-fit:contain;
+
+}
+
+.derecha input[type="file"]{
+
+    width:100%;
+    max-width:300px;
+    margin-top:18px;
+
+    padding:10px;
+
+    border:1px solid var(--gris-borde);
+    border-radius:10px;
+
+    background:white;
+
+}
+
+.derecha button{
+
+    width:100%;
+    max-width:300px;
+
+    margin-top:18px;
+
+    height:50px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:var(--celeste);
+
+    color:white;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.derecha button:hover{
+
+    background:var(--hover);
+
+    transform:translateY(-2px);
+
+    box-shadow:0 10px 20px rgba(76,155,240,.30);
+
+}
+
+/*======================================
+    SCROLL SUAVE
+======================================*/
+
+html{
+
+    scroll-behavior:smooth;
+
+}
+
+/*======================================
+    RESPONSIVE
+======================================*/
+
+/*======================================
+    NOTEBOOKS
+======================================*/
+
+@media (max-width:1400px){
+
+.formulario{
+
+    grid-template-columns:1fr 1fr 280px;
+
+}
+
+.sidebar{
+
+    width:220px;
+
+}
+
+}
+
+/*======================================
+    TABLETS GRANDES
+======================================*/
+
+@media (max-width:1200px){
+
+.sidebar{
+
+    width:90px;
+
+}
+
+.sidebar .logo img{
+
+    width:55px;
+
+}
+
+.sidebar li a{
+
+    justify-content:center;
+    padding:15px;
+
+}
+
+.sidebar li a{
+
+    font-size:0;
+
+}
+
+.sidebar li img{
+
+    width:26px;
+    height:26px;
+
+}
+
+.header{
+
+    padding:20px;
+
+}
+
+.titulo h1{
+
+    font-size:28px;
+
+}
+
+.formulario{
+
+    grid-template-columns:1fr 1fr;
+
+}
+
+.derecha{
+
+    grid-column:1/3;
+    margin-top:20px;
+
+}
+
+.imagen{
+
+    max-width:350px;
+
+}
+
+}
+
+/*======================================
+    TABLETS
+======================================*/
+
+@media (max-width:992px){
+
+.formulario{
+
+    grid-template-columns:1fr;
+
+}
+
+.izquierda,
+.centro,
+.derecha{
+
+    width:100%;
+
+}
+
+.fila2{
+
+    grid-template-columns:1fr;
+
+}
+
+.botones{
+
+    justify-content:center;
+    flex-wrap:wrap;
+
+}
+
+.card{
+
+    margin:20px;
+
+    padding:25px;
+
+}
+
+}
+
+/*======================================
+    CELULARES
+======================================*/
+
+@media (max-width:768px){
+
+.contenedor{
+
+    flex-direction:column;
+
+}
+
+.sidebar{
+
+    width:100%;
+    height:auto;
+
+}
+
+.sidebar nav ul{
+
+    display:flex;
+    overflow-x:auto;
+
+    padding:10px;
+
+}
+
+.sidebar li{
+
+    flex:0 0 auto;
+
+}
+
+.sidebar li a{
+
+    font-size:14px;
+
+    gap:8px;
+
+    padding:10px 14px;
+
+}
+
+.sidebar li a{
+
+    font-size:14px;
+
+}
+
+.logo{
+
+    padding:15px;
+
+}
+
+.logo img{
+
+    width:120px;
+
+}
+
+.header{
+
+    flex-direction:column;
+
+    height:auto;
+
+    gap:15px;
+
+    padding:20px;
+
+}
+
+.titulo{
+
+    justify-content:center;
+
+}
+
+.titulo h1{
+
+    font-size:24px;
+
+}
+
+.usuario{
+
+    justify-content:center;
+
+}
+
+.card{
+
+    margin:15px;
+
+    padding:20px;
+
+}
+
+.botones{
+
+    flex-direction:column;
+
+}
+
+.botones button{
+
+    width:100%;
+
+}
+
+.imagen{
+
+    max-width:250px;
+
+}
+
+}
+
+/*======================================
+    CELULARES PEQUEÑOS
+======================================*/
+
+@media (max-width:480px){
+
+.card{
+
+    padding:15px;
+
+}
+
+.card h2{
+
+    font-size:22px;
+
+}
+
+.titulo h1{
+
+    font-size:20px;
+
+}
+
+.grupo label{
+
+    font-size:14px;
+
+}
+
+.grupo input,
+.grupo select,
+.grupo textarea{
+
+    font-size:14px;
+
+}
+
+.imagen{
+
+    max-width:200px;
+
+}
+
+.usuario span{
+
+    display:none;
+
+}
+
+}
+.subir-excel{
+  
+    margin-left: 1080px;
+    display: flex;
+    
+
+    
+    background:var(--celeste);
+
+    color:white;
+    width: 170px;
+   
+}
+
+.subir-excel:hover{
+
+    background:#2F86E8;
+
+    transform:translateY(-2px);
+
+    box-shadow:0 10px 25px rgba(76,155,240,.35);
+
+}
+
+.subir-pdf{
+  
+    margin-left: 900px;
+    display: flex;
+    
+    margin-top: -26px;
+    background:var(--celeste);
+
+    color:white;
+}
+
+.subir-pdf:hover{
+
+    background:#2F86E8;
+
+    transform:translateY(-2px);
+
+    box-shadow:0 10px 25px rgba(76,155,240,.35);
+
+}
+
+.botones-SYC button{
+
+    min-width:150px;
+
+    height:27px;
+
+    border:none;
+
+    border-radius:10px;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.25s;
+    
+    
+
+    justify-content: center;
+
+
+}
+#contenedorImagen{
+    width:370px;
+    height:370px;
+
+    border:3px dashed #8B7355;
+    border-radius:20px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    position:relative;
+    overflow:hidden;
+    cursor:pointer;
+}
+
+#mensajeImagen{
+    position:absolute;
+    color:#777;
+    font-size:22px;
+    font-weight:500;
+    text-align:center;
+}
+
+#preview{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    display:none;
+}

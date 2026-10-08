@@ -1,0 +1,313 @@
+/* =========================================================
+   PASOS COMPLETADOS
+   ========================================================= */
+
+.paso--completado {
+    border-color: #9bd8bb;
+    background: var(--exito-fondo);
+}
+
+.paso--completado .paso__numero {
+    background: var(--exito);
+    color: var(--blanco);
+}
+
+.paso--completado strong {
+    color: var(--exito);
+}
+
+
+/* =========================================================
+   MENSAJE PRINCIPAL
+   ========================================================= */
+
+.resultado-exitoso {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 22px;
+    padding: 21px 23px;
+    border: 1px solid #9bd8bb;
+    border-radius: 14px;
+    background: var(--exito-fondo);
+    box-shadow: var(--sombra);
+}
+
+.resultado-exitoso__icono {
+    display: grid;
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--exito);
+    color: var(--blanco);
+    font-size: 1.15rem;
+    font-weight: 900;
+}
+
+.resultado-exitoso h2 {
+    margin: 1px 0 6px;
+    color: var(--azul-oscuro);
+    font-size: 1.05rem;
+}
+
+.resultado-exitoso p {
+    margin: 0;
+    color: #3f6954;
+    font-size: 0.84rem;
+    line-height: 1.55;
+}
+
+
+/* =========================================================
+   RESUMEN GENERAL
+   ========================================================= */
+
+.resumen-resultado {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1px;
+    overflow: hidden;
+    margin-bottom: 22px;
+    border: 1px solid var(--borde);
+    border-radius: 14px;
+    background: var(--borde);
+    box-shadow: var(--sombra);
+}
+
+.resumen-resultado article {
+    min-width: 0;
+    padding: 19px;
+    background: var(--blanco);
+    text-align: center;
+}
+
+.resumen-resultado span,
+.resumen-resultado strong {
+    display: block;
+}
+
+.resumen-resultado span {
+    margin-bottom: 8px;
+    color: var(--texto-secundario);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.resumen-resultado strong {
+    color: var(--azul-oscuro);
+    font-size: 1.65rem;
+    line-height: 1;
+}
+
+
+/* =========================================================
+   DETALLE DE RESULTADOS
+   ========================================================= */
+
+.detalle-resultados {
+    overflow: hidden;
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+}
+
+.detalle-resultados__titulo {
+    padding: 21px 23px;
+    border-bottom: 1px solid var(--borde);
+    background: #fbfcfe;
+}
+
+.detalle-resultados__titulo h2 {
+    margin: 0;
+    color: var(--azul-oscuro);
+    font-size: 1.05rem;
+}
+
+.detalle-resultados__titulo p {
+    margin: 5px 0 0;
+    color: var(--texto-secundario);
+    font-size: 0.8rem;
+    line-height: 1.45;
+}
+
+.lista-resultados {
+    display: grid;
+    gap: 17px;
+    padding: 22px;
+}
+
+.resultado-hoja {
+    overflow: hidden;
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    background: var(--blanco);
+}
+
+.resultado-hoja__cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--borde);
+    background:
+        linear-gradient(
+            90deg,
+            rgba(65, 152, 232, 0.09),
+            rgba(255, 255, 255, 0)
+        );
+}
+
+.resultado-hoja__cabecera div > span {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--texto-secundario);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.resultado-hoja__cabecera h3 {
+    margin: 0;
+    color: var(--azul-oscuro);
+    font-size: 0.98rem;
+}
+
+.resultado-hoja__estado {
+    flex-shrink: 0;
+    padding: 7px 11px;
+    border-radius: 20px;
+    background: var(--exito-fondo);
+    color: var(--exito);
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.resultado-hoja__datos {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--borde);
+}
+
+.resultado-hoja__datos > div {
+    min-width: 0;
+    padding: 15px 12px;
+    background: var(--blanco);
+    text-align: center;
+}
+
+.resultado-hoja__datos span,
+.resultado-hoja__datos strong {
+    display: block;
+}
+
+.resultado-hoja__datos span {
+    overflow: hidden;
+    margin-bottom: 7px;
+    color: var(--texto-secundario);
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.resultado-hoja__datos strong {
+    color: var(--azul-oscuro);
+    font-size: 1rem;
+}
+
+
+/* =========================================================
+   ALERTAS Y ACCIONES
+   ========================================================= */
+
+.alerta p {
+    margin: 7px 0 0;
+    line-height: 1.5;
+}
+
+.acciones--resultado {
+    justify-content: flex-end;
+    padding-top: 22px;
+}
+
+.acciones--resultado .boton {
+    text-decoration: none;
+}
+
+
+/* =========================================================
+   DISEÑO RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1000px) {
+    .resumen-resultado {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .resultado-hoja__datos {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 680px) {
+    .resultado-exitoso {
+        padding: 18px;
+    }
+
+    .resultado-hoja__cabecera {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 11px;
+    }
+
+    .resultado-hoja__datos {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .lista-resultados {
+        padding: 17px;
+    }
+
+    .acciones--resultado {
+        align-items: stretch;
+    }
+
+    .acciones--resultado .boton {
+        width: 100%;
+    }
+}
+
+@media (max-width: 460px) {
+    .resultado-exitoso {
+        flex-direction: column;
+    }
+
+    .resumen-resultado,
+    .resultado-hoja__datos {
+        grid-template-columns: 1fr;
+    }
+
+    .resumen-resultado article,
+    .resultado-hoja__datos > div {
+        text-align: left;
+    }
+}
+
+
+/* Reduce movimientos si el dispositivo lo solicita. */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+    }
+}

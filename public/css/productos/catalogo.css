@@ -1,0 +1,1417 @@
+:root {
+    --azul-oscuro: #102c64;
+    --azul-medio: #1d3d86;
+    --azul-principal: #4198e8;
+    --azul-suave: #eaf4ff;
+    --amarillo: #ffc107;
+    --amarillo-suave: #fff7d6;
+    --texto: #24324a;
+    --texto-secundario: #637089;
+    --borde: #d9e1ec;
+    --fondo: #f2f6fb;
+    --blanco: #ffffff;
+    --exito: #137a4b;
+    --exito-fondo: #e9f8f0;
+    --error: #b42318;
+    --error-fondo: #fff0ef;
+    --sombra: 0 12px 34px rgba(27, 51, 94, 0.08);
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    min-width: 320px;
+    background: var(--fondo);
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    background:
+        radial-gradient(
+            circle at top left,
+            rgba(65, 152, 232, 0.11),
+            transparent 34rem
+        ),
+        var(--fondo);
+    color: var(--texto);
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+.pagina-productos {
+    width: min(1580px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 36px 0 56px;
+}
+
+.encabezado-principal {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+    margin-bottom: 25px;
+}
+
+.encabezado-principal__seccion {
+    margin: 0 0 9px;
+    color: var(--azul-principal);
+    font-size: 0.76rem;
+    font-weight: 900;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.encabezado-principal h1 {
+    margin: 0;
+    color: var(--azul-oscuro);
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    line-height: 1.08;
+}
+
+.encabezado-principal__descripcion {
+    max-width: 760px;
+    margin: 12px 0 0;
+    color: var(--texto-secundario);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.encabezado-principal__acciones,
+.filtros__acciones,
+.estado-vacio__acciones {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.boton {
+    display: inline-flex;
+    min-height: 46px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 18px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 800;
+    transition:
+        transform 0.18s ease,
+        border-color 0.18s ease,
+        background 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.boton:hover {
+    transform: translateY(-1px);
+}
+
+.boton--primario {
+    background: var(--azul-principal);
+    color: var(--blanco);
+    box-shadow: 0 8px 20px rgba(65, 152, 232, 0.23);
+}
+
+.boton--primario:hover {
+    background: #2f86d5;
+}
+
+.boton--secundario {
+    border-color: var(--borde);
+    background: var(--blanco);
+    color: var(--azul-oscuro);
+}
+
+.boton--secundario:hover {
+    border-color: #a9bdd4;
+    background: #f9fbfd;
+}
+
+.alerta {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    padding: 15px 17px;
+    border: 1px solid;
+    border-radius: 11px;
+    font-size: 0.84rem;
+}
+
+.alerta--exito {
+    border-color: #a7ddbf;
+    background: var(--exito-fondo);
+    color: var(--exito);
+}
+
+.alerta--error {
+    border-color: #efb1ac;
+    background: var(--error-fondo);
+    color: var(--error);
+}
+
+.resumen {
+    display: grid;
+    grid-template-columns: 0.8fr 1fr 1.8fr;
+    gap: 18px;
+    margin-bottom: 22px;
+}
+
+.resumen__tarjeta {
+    min-width: 0;
+    padding: 19px 21px;
+    border: 1px solid var(--borde);
+    border-radius: 14px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+}
+
+.resumen__etiqueta {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--texto-secundario);
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.resumen__valor {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--azul-oscuro);
+    font-size: 1.75rem;
+    line-height: 1;
+}
+
+.resumen__valor--texto {
+    font-size: 1rem;
+    line-height: 1.3;
+}
+
+.resumen__tarjeta small {
+    color: var(--texto-secundario);
+    font-size: 0.75rem;
+}
+
+.resumen__tarjeta--informativa {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    border-color: #eacb64;
+    background: var(--amarillo-suave);
+    box-shadow: none;
+}
+
+.resumen__icono {
+    display: grid;
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--amarillo);
+    color: var(--azul-oscuro);
+    font-weight: 900;
+}
+
+.resumen__tarjeta--informativa strong {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--azul-oscuro);
+    font-size: 0.86rem;
+}
+
+.resumen__tarjeta--informativa p {
+    margin: 0;
+    color: #665a31;
+    font-size: 0.78rem;
+    line-height: 1.5;
+}
+
+.panel {
+    overflow: hidden;
+    margin-bottom: 22px;
+    border: 1px solid var(--borde);
+    border-radius: 15px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+}
+
+.panel__cabecera {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--borde);
+    background:
+        linear-gradient(
+            90deg,
+            rgba(65, 152, 232, 0.09),
+            rgba(255, 255, 255, 0)
+        );
+}
+
+.panel__cabecera > div {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.panel__numero {
+    display: grid;
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border-radius: 10px;
+    background: var(--azul-medio);
+    color: var(--amarillo);
+    font-size: 0.76rem;
+    font-weight: 900;
+}
+
+.panel__cabecera h2 {
+    margin: 0;
+    color: var(--azul-oscuro);
+    font-size: 1.05rem;
+}
+
+.panel__cabecera p {
+    margin: 5px 0 0;
+    color: var(--texto-secundario);
+    font-size: 0.78rem;
+    line-height: 1.45;
+}
+
+.panel__cabecera--tabla {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.resultado-cantidad {
+    flex-shrink: 0;
+    padding: 7px 11px;
+    border-radius: 20px;
+    background: var(--azul-suave);
+    color: var(--azul-oscuro);
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.filtros {
+    display: grid;
+    grid-template-columns: minmax(280px, 1.8fr) minmax(220px, 0.8fr) auto;
+    align-items: end;
+    gap: 16px;
+    padding: 22px 24px 24px;
+}
+
+.campo {
+    min-width: 0;
+}
+
+.campo label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--azul-oscuro);
+    font-size: 0.76rem;
+    font-weight: 800;
+}
+
+.campo input,
+.campo select {
+    width: 100%;
+    height: 48px;
+    padding: 0 13px;
+    border: 1px solid #cdd7e4;
+    border-radius: 9px;
+    outline: none;
+    background: var(--blanco);
+    color: var(--texto);
+    font-size: 0.84rem;
+    transition:
+        border-color 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.campo input:focus,
+.campo select:focus {
+    border-color: var(--azul-principal);
+    box-shadow: 0 0 0 4px rgba(65, 152, 232, 0.14);
+}
+
+.campo input::placeholder {
+    color: #9aa6b8;
+}
+
+.panel--tabla {
+    min-width: 0;
+    transition: opacity 0.18s ease;
+}
+
+.panel--tabla.panel--cargando {
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+.tabla-contenedor {
+    width: 100%;
+    min-width: 0;
+    overflow-x: scroll;
+    scrollbar-color: #287fc8 #dceaf6;
+    scrollbar-width: auto;
+}
+
+.tabla-contenedor:focus {
+    outline: 3px solid rgba(65, 152, 232, 0.15);
+    outline-offset: -3px;
+}
+
+.tabla-contenedor::-webkit-scrollbar {
+    height: 18px;
+}
+
+.tabla-contenedor::-webkit-scrollbar-track {
+    border-top: 1px solid #a8c8e5;
+    background: #dceaf6;
+}
+
+.tabla-contenedor::-webkit-scrollbar-thumb {
+    border: 3px solid #dceaf6;
+    border-radius: 10px;
+    background: #287fc8;
+}
+
+.tabla-productos {
+    width: 100%;
+    min-width: 1540px;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.76rem;
+}
+
+.tabla-productos th,
+.tabla-productos td {
+    padding: 13px 14px;
+    border-right: 1px solid var(--borde);
+    border-bottom: 1px solid var(--borde);
+    text-align: left;
+    vertical-align: middle;
+}
+
+.tabla-productos th:last-child,
+.tabla-productos td:last-child {
+    border-right: 0;
+}
+
+.tabla-productos thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--azul-oscuro);
+    color: var(--blanco);
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+.tabla-productos tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.tabla-productos tbody tr:hover td {
+    background: #f5f9fe;
+}
+
+.tabla-productos th:nth-child(1) {
+    min-width: 185px;
+}
+
+.tabla-productos th:nth-child(2),
+.tabla-productos th:nth-child(3),
+.tabla-productos th:nth-child(4) {
+    min-width: 145px;
+}
+
+.tabla-productos th:nth-child(5) {
+    min-width: 280px;
+}
+
+.tabla-productos th:nth-child(6) {
+    min-width: 245px;
+}
+
+.tabla-productos th:nth-child(7),
+.tabla-productos th:nth-child(8) {
+    min-width: 125px;
+}
+
+.tabla-productos th:last-child,
+.tabla-productos td:last-child {
+    position: sticky;
+    right: 0;
+    z-index: 1;
+    min-width: 165px;
+    background: var(--blanco);
+    box-shadow: -8px 0 14px rgba(30, 52, 85, 0.06);
+}
+
+.tabla-productos thead th:last-child {
+    z-index: 3;
+    background: var(--azul-oscuro);
+}
+
+.tabla-productos tbody tr:hover td:last-child {
+    background: #f5f9fe;
+}
+
+.dato-principal,
+.dato-secundario {
+    display: block;
+}
+
+.dato-principal {
+    margin-bottom: 5px;
+    color: var(--azul-oscuro);
+}
+
+.dato-secundario,
+.dato-vacio {
+    color: var(--texto-secundario);
+    font-size: 0.7rem;
+}
+
+.codigo {
+    color: #35445d;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 0.73rem;
+}
+
+.descripcion-producto {
+    display: block;
+    max-width: 350px;
+    color: var(--texto);
+    line-height: 1.45;
+}
+
+.clasificacion {
+    display: block;
+    max-width: 300px;
+    color: #4e5e76;
+    line-height: 1.45;
+}
+
+.importe,
+.porcentaje {
+    color: var(--azul-oscuro);
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.boton-accion {
+    display: inline-flex;
+    min-height: 38px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 13px;
+    border-radius: 8px;
+    background: var(--azul-principal);
+    color: var(--blanco);
+    font-size: 0.72rem;
+    font-weight: 900;
+    white-space: nowrap;
+    transition:
+        background 0.18s ease,
+        transform 0.18s ease;
+}
+
+.boton-accion:hover {
+    transform: translateY(-1px);
+    background: #2f86d5;
+}
+
+.estado-vacio {
+    padding: 54px 24px;
+    text-align: center;
+}
+
+.estado-vacio__icono {
+    display: grid;
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 16px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--exito-fondo);
+    color: var(--exito);
+    font-size: 1.25rem;
+    font-weight: 900;
+}
+
+.estado-vacio h3 {
+    margin: 0;
+    color: var(--azul-oscuro);
+}
+
+.estado-vacio p {
+    max-width: 560px;
+    margin: 9px auto 20px;
+    color: var(--texto-secundario);
+    font-size: 0.84rem;
+    line-height: 1.55;
+}
+
+.estado-vacio__acciones {
+    justify-content: center;
+}
+
+.paginacion {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 17px 20px;
+    border-top: 1px solid var(--borde);
+}
+
+.paginacion__paginas {
+    display: flex;
+    gap: 7px;
+}
+
+.paginacion__boton,
+.paginacion__numero {
+    display: inline-flex;
+    min-height: 36px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    background: var(--blanco);
+    color: var(--azul-oscuro);
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.paginacion__boton {
+    padding: 0 12px;
+}
+
+.paginacion__numero {
+    width: 36px;
+}
+
+.paginacion__boton:hover,
+.paginacion__numero:hover,
+.paginacion__numero--activo {
+    border-color: var(--azul-principal);
+    background: var(--azul-principal);
+    color: var(--blanco);
+}
+
+.paginacion__boton--deshabilitado {
+    cursor: not-allowed;
+    opacity: 0.46;
+}
+
+.paginacion__boton--deshabilitado:hover {
+    border-color: var(--borde);
+    background: var(--blanco);
+    color: var(--azul-oscuro);
+}
+
+@media (max-width: 1050px) {
+    .resumen {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .resumen__tarjeta--informativa {
+        grid-column: 1 / -1;
+    }
+
+    .filtros {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .filtros__acciones {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 760px) {
+    .pagina-productos {
+        width: min(100% - 24px, 1580px);
+        padding-top: 24px;
+    }
+
+    .encabezado-principal {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .encabezado-principal__acciones {
+        width: 100%;
+    }
+
+    .encabezado-principal__acciones .boton {
+        flex: 1;
+    }
+
+    .resumen,
+    .filtros {
+        grid-template-columns: 1fr;
+    }
+
+    .resumen__tarjeta--informativa,
+    .filtros__acciones {
+        grid-column: auto;
+    }
+
+    .panel__cabecera--tabla {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .paginacion {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .paginacion__paginas {
+        justify-content: center;
+        order: -1;
+    }
+}
+
+@media (max-width: 520px) {
+    .encabezado-principal__acciones,
+    .filtros__acciones,
+    .estado-vacio__acciones {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .encabezado-principal__acciones .boton,
+    .filtros__acciones .boton,
+    .estado-vacio__acciones .boton {
+        width: 100%;
+    }
+
+    .panel__cabecera,
+    .filtros {
+        padding-right: 17px;
+        padding-left: 17px;
+    }
+
+    .panel__cabecera > div {
+        align-items: flex-start;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+    }
+}
+
+/* ================================================================
+   Modos de consulta e historial del catálogo
+   ================================================================ */
+.selector-vista {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 22px;
+}
+
+.selector-vista__opcion {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 5px;
+    padding: 15px 18px;
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+}
+
+.selector-vista__opcion:hover {
+    transform: translateY(-1px);
+    border-color: #9ec9ed;
+}
+
+.selector-vista__opcion strong {
+    color: var(--azul-oscuro);
+    font-size: 0.88rem;
+}
+
+.selector-vista__opcion span {
+    color: var(--texto-secundario);
+    font-size: 0.73rem;
+    line-height: 1.4;
+}
+
+.selector-vista__opcion--activa {
+    border-color: var(--azul-principal);
+    background: var(--azul-suave);
+    box-shadow: 0 0 0 3px rgba(65, 152, 232, 0.08);
+}
+
+.resumen-vinculacion {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    margin-bottom: 6px;
+    color: var(--texto-secundario);
+    font-size: 0.76rem;
+}
+
+.resumen-vinculacion strong {
+    margin-right: 3px;
+    color: var(--azul-oscuro);
+    font-size: 1.05rem;
+}
+
+.filtros--completo {
+    grid-template-columns: minmax(260px, 1.5fr) minmax(210px, 0.7fr) minmax(250px, 0.9fr) auto;
+}
+
+.campo__ayuda {
+    display: block;
+    margin-top: 6px;
+    color: var(--texto-secundario);
+    font-size: 0.68rem;
+}
+
+.historial-listas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 12px;
+    margin: -5px 0 22px;
+}
+
+.historial-lista {
+    display: grid;
+    gap: 5px;
+    min-width: 0;
+    padding: 13px 15px;
+    border: 1px solid var(--borde);
+    border-radius: 11px;
+    background: var(--blanco);
+    box-shadow: 0 7px 20px rgba(27, 51, 94, 0.05);
+}
+
+.historial-lista:hover,
+.historial-lista--seleccionada {
+    border-color: var(--azul-principal);
+    background: #f7fbff;
+}
+
+.historial-lista__estado {
+    justify-self: start;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #f0f2f5;
+    color: var(--texto-secundario);
+    font-size: 0.62rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.historial-lista__estado--vigente {
+    background: var(--exito-fondo);
+    color: var(--exito);
+}
+
+.historial-lista strong {
+    overflow: hidden;
+    color: var(--azul-oscuro);
+    font-size: 0.79rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.historial-lista small {
+    color: var(--texto-secundario);
+    font-size: 0.67rem;
+    line-height: 1.35;
+}
+
+.tabla-productos--completa {
+    min-width: 1720px;
+}
+
+.dato-secundario--lista {
+    line-height: 1.35;
+}
+
+.etiqueta-lista {
+    display: inline-flex;
+    margin-top: 7px;
+    padding: 4px 7px;
+    border-radius: 999px;
+    background: #f0f2f5;
+    color: var(--texto-secundario);
+    font-size: 0.6rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.etiqueta-lista--vigente {
+    background: var(--exito-fondo);
+    color: var(--exito);
+}
+
+.producto-vinculado {
+    display: flex;
+    max-width: 260px;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.producto-vinculado strong {
+    color: var(--azul-oscuro);
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 0.74rem;
+}
+
+.producto-vinculado small {
+    overflow: hidden;
+    color: var(--texto-secundario);
+    font-size: 0.68rem;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+}
+
+.producto-pendiente,
+.accion-resuelta,
+.accion-historica {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 9px;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.producto-pendiente {
+    background: var(--amarillo-suave);
+    color: #735b00;
+}
+
+.accion-resuelta {
+    background: var(--exito-fondo);
+    color: var(--exito);
+}
+
+.accion-historica {
+    background: #f0f2f5;
+    color: var(--texto-secundario);
+}
+
+@media (max-width: 1180px) {
+    .filtros--completo {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .filtros--completo .filtros__acciones {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 760px) {
+    .selector-vista,
+    .filtros--completo {
+        grid-template-columns: 1fr;
+    }
+
+    .filtros--completo .filtros__acciones {
+        grid-column: auto;
+    }
+}
+
+
+
+/* ================================================================
+   Catálogo unificado
+   ================================================================ */
+
+.filtros--catalogo-unificado {
+    grid-template-columns:
+        minmax(280px, 1.45fr)
+        minmax(190px, 0.72fr)
+        minmax(245px, 0.9fr)
+        minmax(185px, 0.7fr)
+        auto;
+}
+
+.tabla-productos--unificada {
+    min-width: 2150px;
+}
+
+.tabla-productos--unificada .col-proveedor {
+    min-width: 195px;
+}
+
+.tabla-productos--unificada .col-codigo {
+    min-width: 145px;
+}
+
+.tabla-productos--unificada .col-descripcion {
+    min-width: 300px;
+}
+
+.tabla-productos--unificada .col-clasificacion {
+    min-width: 270px;
+}
+
+.tabla-productos--unificada .col-producto {
+    min-width: 245px;
+}
+
+.tabla-productos--unificada .col-precio {
+    min-width: 155px;
+}
+
+.tabla-productos--unificada .col-descuento {
+    min-width: 120px;
+}
+
+.tabla-productos--unificada .col-accion {
+    min-width: 170px;
+}
+
+.tabla-productos--unificada td.importe {
+    min-width: 155px;
+}
+
+.tabla-productos--unificada td.porcentaje {
+    min-width: 120px;
+}
+
+.estado-vacio__aclaracion {
+    max-width: 620px;
+    margin: 6px auto 0;
+    color: var(--texto-secundario);
+    font-size: 0.72rem;
+    line-height: 1.45;
+}
+
+@media (max-width: 1320px) {
+    .filtros--catalogo-unificado {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .filtros--catalogo-unificado .filtros__acciones {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 760px) {
+    .filtros--catalogo-unificado {
+        grid-template-columns: 1fr;
+    }
+
+    .filtros--catalogo-unificado .filtros__acciones {
+        grid-column: auto;
+    }
+}
+
+
+/* ================================================================
+   Corrección visual: alineación de filtros con mensajes de ayuda
+   ================================================================ */
+
+/*
+ * Los textos de ayuda de "Lista del proveedor" y "Estado del artículo"
+ * no deben modificar la altura del bloque dentro del grid. De esta forma
+ * todos los inputs/selects permanecen alineados horizontalmente.
+ */
+.filtros--catalogo-unificado .campo {
+    position: relative;
+}
+
+.filtros--catalogo-unificado .campo__ayuda {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    margin-top: 6px;
+}
+
+/* Reserva espacio inferior para los mensajes posicionados fuera del flujo. */
+.filtros--catalogo-unificado {
+    padding-bottom: 36px;
+}
+
+@media (max-width: 1320px) {
+    .filtros--catalogo-unificado {
+        row-gap: 30px;
+    }
+}
+
+@media (max-width: 760px) {
+    /*
+     * En una sola columna conviene que la ayuda vuelva al flujo normal,
+     * porque ya no existe un problema de alineación horizontal.
+     */
+    .filtros--catalogo-unificado .campo__ayuda {
+        position: static;
+        margin-top: 6px;
+    }
+
+    .filtros--catalogo-unificado {
+        row-gap: 16px;
+        padding-bottom: 24px;
+    }
+}
+
+
+/* ================================================================
+   Comparación de precios desde el catálogo de proveedores
+   ================================================================ */
+
+.tabla-productos--unificada {
+    min-width: 2360px;
+}
+
+.tabla-productos--unificada .col-precio-neto {
+    min-width: 170px;
+}
+
+.tabla-productos--unificada .col-accion {
+    min-width: 300px;
+}
+
+.importe--neto {
+    color: var(--exito);
+}
+
+.acciones-catalogo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: max-content;
+}
+
+.boton-comparar-precios {
+    display: inline-flex;
+    min-height: 38px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 13px;
+    border: 1px solid #e5bd33;
+    border-radius: 8px;
+    background: var(--amarillo-suave);
+    color: var(--azul-oscuro);
+    font-size: 0.72rem;
+    font-weight: 900;
+    white-space: nowrap;
+    transition:
+        border-color 0.18s ease,
+        background 0.18s ease,
+        transform 0.18s ease;
+}
+
+.boton-comparar-precios:hover {
+    border-color: var(--amarillo);
+    background: #fff0ae;
+    transform: translateY(-1px);
+}
+
+.boton-comparar-precios:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.18);
+}
+
+.accion-sin-comparacion {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 9px;
+    border-radius: 999px;
+    background: #f0f2f5;
+    color: var(--texto-secundario);
+    font-size: 0.64rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+
+/* ================================================================
+   Tabla de catálogo compacta
+   Reduce espacios vacíos y deja las columnas cerca de su contenido.
+   ================================================================ */
+
+/*
+ * La tabla deja de reservar un ancho fijo gigante.
+ * Mantiene como mínimo el ancho disponible y crece solamente
+ * cuando el contenido realmente lo necesita.
+ */
+.tabla-productos--unificada {
+    width: max-content;
+    min-width: 100%;
+    table-layout: auto;
+}
+
+/* Un poco menos de aire horizontal en esta tabla solamente. */
+.tabla-productos--unificada th,
+.tabla-productos--unificada td {
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+/* Proveedor/lista necesita lugar, pero no una columna tan ancha. */
+.tabla-productos--unificada .col-proveedor {
+    width: 165px;
+    min-width: 165px;
+}
+
+/*
+ * Los códigos se ajustan prácticamente al encabezado y al dato.
+ * width: 1% hace que la tabla les dé solamente el espacio necesario.
+ */
+.tabla-productos--unificada .col-codigo {
+    width: 1%;
+    min-width: 0;
+    white-space: nowrap;
+}
+
+/* Descripción: conserva más espacio porque es el dato principal. */
+.tabla-productos--unificada .col-descripcion {
+    width: 255px;
+    min-width: 235px;
+}
+
+/* Clasificación puede partirse en varias líneas. */
+.tabla-productos--unificada .col-clasificacion {
+    width: 210px;
+    min-width: 190px;
+}
+
+/* Producto interno: suficiente para código MES + descripción corta. */
+.tabla-productos--unificada .col-producto {
+    width: 195px;
+    min-width: 180px;
+}
+
+/* Columnas numéricas: sólo el ancho necesario. */
+.tabla-productos--unificada .col-precio,
+.tabla-productos--unificada .col-descuento,
+.tabla-productos--unificada .col-precio-neto {
+    width: 1%;
+    min-width: 0;
+    white-space: nowrap;
+}
+
+.tabla-productos--unificada td.importe,
+.tabla-productos--unificada td.porcentaje {
+    min-width: 0;
+    white-space: nowrap;
+}
+
+/*
+ * Acción se adapta a sus botones. No reserva 300 px cuando
+ * únicamente aparece "Sólo consulta" o "Vinculado".
+ */
+.tabla-productos--unificada .col-accion {
+    width: 1%;
+    min-width: 0;
+    white-space: nowrap;
+}
+
+/* Los códigos de las filas tampoco fuerzan columnas innecesariamente anchas. */
+.tabla-productos--unificada td:nth-child(2),
+.tabla-productos--unificada td:nth-child(3),
+.tabla-productos--unificada td:nth-child(4) {
+    white-space: nowrap;
+}
+
+/* Evita que los botones agreguen un ancho extra artificial. */
+.tabla-productos--unificada .acciones-catalogo {
+    min-width: 0;
+}
+
+/*
+ * La última columna continúa fija durante el scroll horizontal,
+ * pero ahora toma el ancho real de las acciones.
+ */
+.tabla-productos--unificada th:last-child,
+.tabla-productos--unificada td:last-child {
+    min-width: 0;
+}
+
+
+/* ================================================================
+   Tabla de catálogo compacta V2
+   Fuerza anchos reales por columna y centra códigos/valores.
+   ================================================================ */
+
+/*
+ * En la versión anterior max-content permitía que los encabezados
+ * siguieran estirando la tabla. Acá usamos un ancho controlado.
+ */
+.tabla-productos--unificada {
+    width: 1680px;
+    min-width: 1680px;
+    table-layout: fixed;
+}
+
+/* Menos aire lateral dentro de cada celda. */
+.tabla-productos--unificada th,
+.tabla-productos--unificada td {
+    padding-right: 7px;
+    padding-left: 7px;
+}
+
+/* 1 - Proveedor y lista */
+.tabla-productos--unificada th:nth-child(1),
+.tabla-productos--unificada td:nth-child(1) {
+    width: 155px;
+    min-width: 155px;
+}
+
+/* 2 - Código proveedor */
+.tabla-productos--unificada th:nth-child(2),
+.tabla-productos--unificada td:nth-child(2) {
+    width: 105px;
+    min-width: 105px;
+    text-align: center;
+}
+
+/* 3 - Código fabricante */
+.tabla-productos--unificada th:nth-child(3),
+.tabla-productos--unificada td:nth-child(3) {
+    width: 110px;
+    min-width: 110px;
+    text-align: center;
+}
+
+/* 4 - Código de barras */
+.tabla-productos--unificada th:nth-child(4),
+.tabla-productos--unificada td:nth-child(4) {
+    width: 130px;
+    min-width: 130px;
+    text-align: center;
+}
+
+/* Los títulos de código pueden partirse en dos líneas. */
+.tabla-productos--unificada th:nth-child(2),
+.tabla-productos--unificada th:nth-child(3),
+.tabla-productos--unificada th:nth-child(4) {
+    white-space: normal;
+    line-height: 1.15;
+}
+
+/* 5 - Descripción recibida */
+.tabla-productos--unificada th:nth-child(5),
+.tabla-productos--unificada td:nth-child(5) {
+    width: 245px;
+    min-width: 245px;
+}
+
+/* 6 - Clasificación del proveedor */
+.tabla-productos--unificada th:nth-child(6),
+.tabla-productos--unificada td:nth-child(6) {
+    width: 185px;
+    min-width: 185px;
+}
+
+/* 7 - Producto Messirve */
+.tabla-productos--unificada th:nth-child(7),
+.tabla-productos--unificada td:nth-child(7) {
+    width: 170px;
+    min-width: 170px;
+}
+
+/* 8 - Precio de lista */
+.tabla-productos--unificada th:nth-child(8),
+.tabla-productos--unificada td:nth-child(8) {
+    width: 105px;
+    min-width: 105px;
+    text-align: center;
+}
+
+/* 9 - Descuento */
+.tabla-productos--unificada th:nth-child(9),
+.tabla-productos--unificada td:nth-child(9) {
+    width: 85px;
+    min-width: 85px;
+    text-align: center;
+}
+
+/* 10 - Precio neto */
+.tabla-productos--unificada th:nth-child(10),
+.tabla-productos--unificada td:nth-child(10) {
+    width: 110px;
+    min-width: 110px;
+    text-align: center;
+}
+
+/* Títulos económicos también pueden envolver para ahorrar ancho. */
+.tabla-productos--unificada th:nth-child(8),
+.tabla-productos--unificada th:nth-child(9),
+.tabla-productos--unificada th:nth-child(10) {
+    white-space: normal;
+    line-height: 1.15;
+}
+
+/* 11 - Acción: espacio justo para los dos botones vigentes. */
+.tabla-productos--unificada th:nth-child(11),
+.tabla-productos--unificada td:nth-child(11) {
+    width: 260px;
+    min-width: 260px;
+}
+
+/* Centrado del contenido interno de códigos. */
+.tabla-productos--unificada td:nth-child(2) .codigo,
+.tabla-productos--unificada td:nth-child(3) .codigo,
+.tabla-productos--unificada td:nth-child(4) .codigo {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+}
+
+/* Evita que textos largos vuelvan a ensanchar la tabla fija. */
+.tabla-productos--unificada .descripcion-producto,
+.tabla-productos--unificada .clasificacion,
+.tabla-productos--unificada .producto-vinculado {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
+/* La acción continúa fija al desplazarse horizontalmente. */
+.tabla-productos--unificada th:last-child,
+.tabla-productos--unificada td:last-child {
+    min-width: 260px;
+}

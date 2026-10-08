@@ -1,0 +1,277 @@
+/* Comparación de precios desde Catálogo de proveedores. */
+
+.pagina-comparador {
+    width: min(1780px, calc(100% - 40px));
+}
+
+.articulo-referencia {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 16px;
+    padding: 19px 22px;
+    border: 1px solid var(--borde);
+    border-radius: 14px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+}
+
+.articulo-referencia__estado {
+    flex: 0 0 auto;
+    padding: 10px 13px;
+    border-radius: 9px;
+    background: var(--azul-oscuro);
+    color: var(--amarillo);
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 0.8rem;
+    font-weight: 900;
+}
+
+.articulo-referencia__datos {
+    min-width: 0;
+}
+
+.articulo-referencia__datos > span {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--texto-secundario);
+    font-size: 0.68rem;
+    font-weight: 900;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+}
+
+.articulo-referencia__datos h2 {
+    margin: 0;
+    color: var(--azul-oscuro);
+    font-size: 1.05rem;
+}
+
+.articulo-referencia__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px 18px;
+    margin-top: 8px;
+    color: var(--texto-secundario);
+    font-size: 0.74rem;
+}
+
+.articulo-referencia__meta strong {
+    color: var(--texto);
+}
+
+.criterio-comparacion {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 22px;
+    padding: 14px 17px;
+    border: 1px solid #b9d8f3;
+    border-radius: 12px;
+    background: #f2f8ff;
+}
+
+.criterio-comparacion__icono {
+    display: grid;
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--azul-principal);
+    color: var(--blanco);
+    font-weight: 900;
+}
+
+.criterio-comparacion strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--azul-oscuro);
+    font-size: 0.8rem;
+}
+
+.criterio-comparacion p {
+    margin: 0;
+    color: var(--texto-secundario);
+    font-size: 0.75rem;
+    line-height: 1.5;
+}
+
+.resumen--comparador {
+    grid-template-columns:
+        minmax(160px, 0.6fr)
+        minmax(180px, 0.7fr)
+        minmax(240px, 0.9fr)
+        minmax(360px, 1.55fr);
+}
+
+.resumen__tarjeta--mejor {
+    border-color: #d9b42d;
+    background: var(--amarillo-suave);
+}
+
+.mejor-proveedor {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--azul-oscuro);
+    font-size: 1rem;
+}
+
+.mejor-precio {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--exito);
+    font-size: 1.25rem;
+    font-weight: 900;
+}
+
+.alerta--advertencia {
+    border-color: #e8d487;
+    background: #fffaf0;
+    color: #6b5a24;
+}
+
+.tabla-contenedor--comparador {
+    overflow-x: auto;
+}
+
+.tabla-comparador {
+    min-width: 2500px;
+}
+
+.tabla-comparador th:nth-child(1) { min-width: 190px; }
+.tabla-comparador th:nth-child(2) { min-width: 205px; }
+.tabla-comparador th:nth-child(3),
+.tabla-comparador th:nth-child(4) { min-width: 145px; }
+.tabla-comparador th:nth-child(5) { min-width: 245px; }
+.tabla-comparador th:nth-child(6),
+.tabla-comparador th:nth-child(7),
+.tabla-comparador th:nth-child(9),
+.tabla-comparador th:nth-child(11),
+.tabla-comparador th:nth-child(12) { min-width: 155px; }
+.tabla-comparador th:nth-child(8) { min-width: 235px; }
+.tabla-comparador th:nth-child(10),
+.tabla-comparador th:nth-child(13) { min-width: 145px; }
+
+.tabla-comparador th:last-child,
+.tabla-comparador td:last-child {
+    position: static;
+    right: auto;
+    z-index: auto;
+    box-shadow: none;
+}
+
+.tabla-comparador thead th:last-child {
+    background: var(--azul-oscuro);
+}
+
+.fila-mejor-oferta td {
+    background: #fffbea;
+}
+
+.fila-mejor-oferta:hover td {
+    background: #fff6ca !important;
+}
+
+.fila-referencia td:first-child {
+    box-shadow: inset 4px 0 0 var(--azul-principal);
+}
+
+.fila-no-comparable td {
+    background: #fafbfc;
+}
+
+.etiqueta-referencia {
+    display: inline-flex;
+    margin-top: 5px;
+    padding: 4px 7px;
+    border-radius: 999px;
+    background: var(--azul-suave);
+    color: var(--azul-oscuro);
+    font-size: 0.6rem;
+    font-weight: 900;
+}
+
+.descuentos-lista {
+    display: flex;
+    min-width: 220px;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.descuentos-lista strong { color: var(--azul-oscuro); }
+.descuentos-lista small {
+    color: var(--texto-secundario);
+    font-size: 0.66rem;
+    line-height: 1.4;
+}
+
+.origen-costo,
+.estado-iva,
+.mejor-opcion,
+.otra-opcion,
+.sin-recomendacion,
+.costo-no-comparable {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 9px;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.origen-costo--informado { background: #e9f8f0; color: #137a4b; }
+.origen-costo--calculado { background: var(--azul-suave); color: var(--azul-oscuro); }
+.origen-costo--lista { background: #f0f2f5; color: var(--texto-secundario); }
+.estado-iva--incluido { background: #fff0ef; color: var(--error); }
+.estado-iva--sin-iva { background: #e9f8f0; color: var(--exito); }
+.importe--comparable { color: var(--exito); font-size: 0.83rem; }
+.importe--comparable .dato-secundario { margin-top: 4px; font-weight: 600; }
+.mejor-opcion { background: var(--amarillo); color: var(--azul-oscuro); }
+.otra-opcion { background: #eef2f6; color: var(--texto-secundario); }
+.sin-recomendacion,
+.costo-no-comparable { background: var(--error-fondo); color: var(--error); }
+
+.nota-comparacion {
+    display: flex;
+    gap: 12px;
+    padding: 16px 18px;
+    border: 1px solid #e8d487;
+    border-radius: 12px;
+    background: #fffaf0;
+    color: #6b5a24;
+}
+
+.nota-comparacion strong {
+    flex: 0 0 auto;
+    color: var(--azul-oscuro);
+    font-size: 0.78rem;
+}
+
+.nota-comparacion p {
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1.5;
+}
+
+.estado-vacio--comparador {
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+@media (max-width: 1250px) {
+    .resumen--comparador { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .resumen--comparador .resumen__tarjeta--informativa { grid-column: 1 / -1; }
+}
+
+@media (max-width: 760px) {
+    .pagina-comparador { width: min(100% - 24px, 1780px); }
+    .articulo-referencia { flex-direction: column; }
+    .resumen--comparador { grid-template-columns: 1fr; }
+    .resumen--comparador .resumen__tarjeta--informativa { grid-column: auto; }
+    .nota-comparacion { flex-direction: column; }
+}

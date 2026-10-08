@@ -1,0 +1,128 @@
+/* Complemento de catalogo.css y editar.css. */
+.pagina-producto-manual [hidden] {
+    display: none !important;
+}
+
+.pagina-producto-manual .encabezado-principal {
+    align-items: flex-start;
+}
+
+.pagina-producto-manual .encabezado-principal > a {
+    flex-shrink: 0;
+}
+
+.resumen-manual {
+    grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.8fr);
+}
+
+.nota-obligatorios,
+.estado-guardado {
+    margin: 0 0 16px;
+    color: var(--texto-secundario);
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+
+.estado-guardado {
+    margin-top: 12px;
+    text-align: right;
+}
+
+.alta-clasificacion {
+    margin-top: 12px;
+    padding: 14px;
+    border: 1px solid #b8d9fb;
+    border-radius: 9px;
+    background: var(--azul-suave);
+}
+
+.alta-unidad__campos {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(120px, 0.7fr);
+    gap: 14px;
+}
+
+.alta-unidad__campos > div {
+    min-width: 0;
+}
+
+.pagina-producto-manual .mensaje-error,
+.pagina-producto-manual .error-opcion {
+    color: var(--error);
+    font-size: 0.76rem;
+    line-height: 1.5;
+}
+
+.pagina-producto-manual [aria-invalid="true"] {
+    border-color: var(--error);
+}
+
+.error-opcion {
+    margin: 0 24px 18px;
+}
+
+.pagina-producto-manual input[type="file"] {
+    height: auto;
+    padding: 12px;
+    white-space: normal;
+}
+
+.vista-previa-manual {
+    display: grid;
+    min-height: 190px;
+    padding: 18px;
+    place-items: center;
+    border: 1px dashed #b8cce6;
+    border-radius: 12px;
+    background: #f8fbff;
+    color: var(--texto-secundario);
+    font-size: 0.8rem;
+}
+
+.vista-previa-manual img {
+    width: 100%;
+    max-height: 230px;
+    object-fit: contain;
+}
+
+.pagina-producto-manual #quitar-imagen {
+    margin-top: 12px;
+}
+
+.pagina-producto-manual button:disabled {
+    cursor: wait;
+    opacity: 0.65;
+}
+
+/* El listado ahora tiene tres accesos de alta/importación. */
+.acciones-altas-productos {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    flex-shrink: 0;
+    max-width: 590px;
+}
+
+@media (max-width: 1250px) {
+    .pagina-productos--indice .encabezado-principal {
+        flex-wrap: wrap;
+    }
+
+    .acciones-altas-productos {
+        justify-content: flex-start;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 760px) {
+    .resumen-manual {
+        grid-template-columns: 1fr;
+    }
+
+    .acciones-altas-productos {
+        flex-shrink: 1;
+    }
+
+    .alta-unidad__campos {
+        grid-template-columns: 1fr;
+    }
+}

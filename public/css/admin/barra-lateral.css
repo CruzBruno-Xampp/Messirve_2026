@@ -1,0 +1,467 @@
+/*
+ * Barra lateral reutilizable del panel administrativo de Messirve.
+ * Utiliza la misma paleta azul de las pantallas actuales del sistema.
+ */
+
+body.con-barra-lateral {
+    --barra-lateral-ancho: 228px;
+    padding-left: var(--barra-lateral-ancho);
+}
+
+body.menu-administrativo-abierto {
+    overflow: hidden;
+}
+
+.barra-lateral-admin {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 1000;
+    display: flex;
+    width: var(--barra-lateral-ancho, 228px);
+    min-height: 100vh;
+    flex-direction: column;
+    background:
+        radial-gradient(
+            circle at 10% 8%,
+            rgba(65, 152, 232, 0.32),
+            transparent 14rem
+        ),
+        linear-gradient(180deg, #143a7a 0%, #102c64 58%, #0b2453 100%);
+    color: #ffffff;
+    box-shadow: 8px 0 28px rgba(16, 44, 100, 0.15);
+}
+
+.barra-lateral__cabecera {
+    position: relative;
+    display: flex;
+    min-height: 110px;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.13);
+}
+
+.barra-lateral__marca {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 13px;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.barra-lateral__marca-icono {
+    display: grid;
+    flex: 0 0 48px;
+    width: 48px;
+    height: 48px;
+    place-items: center;
+    border-radius: 13px;
+    background: rgba(234, 244, 255, 0.14);
+    color: #72b9f6;
+}
+
+.barra-lateral__marca-icono svg {
+    width: 34px;
+    height: 34px;
+    fill: currentColor;
+}
+
+.barra-lateral__marca-texto {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    line-height: 1.05;
+}
+
+.barra-lateral__marca-texto strong {
+    font-size: 1.04rem;
+    font-weight: 950;
+    letter-spacing: 0.035em;
+    white-space: nowrap;
+}
+
+.barra-lateral__marca-texto small {
+    margin-top: 4px;
+    color: #a9d6fb;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.barra-lateral__boton-movil {
+    display: none;
+}
+
+.barra-lateral__navegacion {
+    position: relative;
+    display: flex;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+    gap: 6px;
+    overflow: visible;
+    padding: 18px 14px;
+    scrollbar-color: rgba(114, 185, 246, 0.7) transparent;
+    scrollbar-width: thin;
+}
+
+.barra-lateral__titulo {
+    margin: 0 12px 7px;
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.barra-lateral__grupo {
+    position: relative;
+}
+
+.barra-lateral__item {
+    position: relative;
+    display: flex;
+    width: 100%;
+    min-height: 58px;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 14px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.9);
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 800;
+    text-align: left;
+    text-decoration: none;
+}
+
+.barra-lateral__item--boton {
+    cursor: pointer;
+    transition:
+        color 0.18s ease,
+        background-color 0.18s ease,
+        border-color 0.18s ease,
+        transform 0.18s ease;
+}
+
+.barra-lateral__item--boton:hover,
+.barra-lateral__item--boton:focus-visible {
+    border-color: rgba(114, 185, 246, 0.38);
+    outline: none;
+    background: rgba(234, 244, 255, 0.12);
+    color: #ffffff;
+    transform: translateX(2px);
+}
+
+.barra-lateral__item--activo {
+    border-color: rgba(114, 185, 246, 0.55);
+    background: #eaf4ff;
+    color: #102c64;
+    box-shadow: 0 8px 20px rgba(3, 17, 45, 0.2);
+}
+
+.barra-lateral__item--activo:hover,
+.barra-lateral__item--activo:focus-visible {
+    background: #ffffff;
+    color: #102c64;
+}
+
+.barra-lateral__item--deshabilitado {
+    cursor: not-allowed;
+    opacity: 0.68;
+}
+
+.barra-lateral__icono {
+    display: grid;
+    flex: 0 0 35px;
+    width: 35px;
+    height: 35px;
+    place-items: center;
+}
+
+.barra-lateral__icono svg {
+    width: 33px;
+    height: 33px;
+    fill: currentColor;
+}
+
+.barra-lateral__texto {
+    min-width: 0;
+    flex: 1;
+}
+
+.barra-lateral__flecha {
+    flex: 0 0 19px;
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2.4;
+    transition: transform 0.18s ease;
+}
+
+.barra-lateral__item--boton[aria-expanded="true"] .barra-lateral__flecha {
+    transform: rotate(180deg);
+}
+
+.barra-lateral__submenu {
+    position: absolute;
+    top: 0;
+    left: calc(100% + 16px);
+    z-index: 1010;
+    width: 280px;
+    overflow: hidden;
+    border: 1px solid #c5d8eb;
+    border-radius: 13px;
+    background: #ffffff;
+    color: #24324a;
+    box-shadow: 0 18px 42px rgba(16, 44, 100, 0.24);
+    animation: submenu-productos-entrada 0.16s ease-out;
+}
+
+.barra-lateral__submenu[hidden] {
+    display: none;
+}
+
+.barra-lateral__submenu-cabecera {
+    display: flex;
+    flex-direction: column;
+    padding: 16px 17px;
+    background: linear-gradient(135deg, #143a7a, #102c64);
+    color: #ffffff;
+}
+
+.barra-lateral__submenu-cabecera strong {
+    font-size: 1rem;
+}
+
+.barra-lateral__submenu-cabecera small {
+    margin-top: 3px;
+    color: #b9dcfa;
+    font-size: 0.78rem;
+}
+
+.barra-lateral__submenu-enlace {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    margin: 8px;
+    padding: 14px 13px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: #24324a;
+    text-decoration: none;
+    transition:
+        border-color 0.18s ease,
+        background-color 0.18s ease,
+        transform 0.18s ease;
+}
+
+.barra-lateral__submenu-enlace + .barra-lateral__submenu-enlace {
+    margin-top: 0;
+}
+
+.barra-lateral__submenu-enlace:hover,
+.barra-lateral__submenu-enlace:focus-visible {
+    border-color: #bad8f1;
+    outline: none;
+    background: #f1f8ff;
+    transform: translateX(2px);
+}
+
+.barra-lateral__submenu-enlace--activo {
+    border-color: #a8d0f1;
+    background: #eaf4ff;
+}
+
+.barra-lateral__submenu-enlace > span:last-child {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+}
+
+.barra-lateral__submenu-enlace strong {
+    color: #102c64;
+    font-size: 0.9rem;
+}
+
+.barra-lateral__submenu-enlace small {
+    margin-top: 3px;
+    color: #637089;
+    font-size: 0.74rem;
+    line-height: 1.25;
+}
+
+.barra-lateral__submenu-icono {
+    display: grid;
+    flex: 0 0 43px;
+    width: 43px;
+    height: 43px;
+    place-items: center;
+    border-radius: 9px;
+    background: #dceeff;
+    color: #1d3d86;
+}
+
+.barra-lateral__submenu-icono svg {
+    width: 25px;
+    height: 25px;
+    fill: currentColor;
+}
+
+.barra-lateral__pie {
+    padding: 18px 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.53);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.barra-lateral__fondo {
+    display: none;
+}
+
+@keyframes submenu-productos-entrada {
+    from {
+        opacity: 0;
+        transform: translateX(-7px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@media (max-width: 1050px) {
+    body.con-barra-lateral {
+        padding-top: 78px;
+        padding-left: 0;
+    }
+
+    .barra-lateral-admin {
+        right: 0;
+        bottom: auto;
+        width: 100%;
+        min-height: 78px;
+        height: 78px;
+        overflow: visible;
+        background: linear-gradient(90deg, #102c64, #143a7a);
+        box-shadow: 0 8px 24px rgba(16, 44, 100, 0.18);
+    }
+
+    .barra-lateral__cabecera {
+        min-height: 78px;
+        justify-content: space-between;
+        padding: 10px 20px;
+        border-bottom: 0;
+    }
+
+    .barra-lateral__marca-icono {
+        width: 42px;
+        height: 42px;
+    }
+
+    .barra-lateral__boton-movil {
+        display: flex;
+        width: 42px;
+        height: 42px;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 5px;
+        padding: 0;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 9px;
+        background: rgba(255, 255, 255, 0.08);
+        cursor: pointer;
+    }
+
+    .barra-lateral__boton-movil span {
+        display: block;
+        width: 19px;
+        height: 2px;
+        border-radius: 2px;
+        background: #ffffff;
+    }
+
+    .barra-lateral__navegacion {
+        position: fixed;
+        top: 78px;
+        bottom: 0;
+        left: 0;
+        z-index: 1002;
+        width: min(340px, calc(100vw - 34px));
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding: 20px 14px 28px;
+        background: linear-gradient(180deg, #143a7a, #0b2453);
+        box-shadow: 16px 18px 36px rgba(10, 31, 72, 0.28);
+        transform: translateX(-105%);
+        transition: transform 0.22s ease;
+    }
+
+    .barra-lateral-admin--abierta .barra-lateral__navegacion {
+        transform: translateX(0);
+    }
+
+    .barra-lateral__item {
+        min-height: 58px;
+        font-size: 0.9rem;
+    }
+
+    .barra-lateral__submenu {
+        position: static;
+        width: auto;
+        margin: 7px 2px 10px;
+        animation: none;
+    }
+
+    .barra-lateral__submenu::before {
+        display: none;
+    }
+
+    .barra-lateral__pie {
+        display: none;
+    }
+
+    .barra-lateral__fondo {
+        position: fixed;
+        inset: 78px 0 0;
+        z-index: 999;
+        background: rgba(8, 25, 57, 0.48);
+        backdrop-filter: blur(2px);
+    }
+
+    body.menu-administrativo-abierto .barra-lateral__fondo {
+        display: block;
+    }
+}
+
+@media (max-width: 520px) {
+    .barra-lateral__marca-texto strong {
+        font-size: 0.92rem;
+    }
+
+    .barra-lateral__marca-texto small {
+        font-size: 0.64rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .barra-lateral-admin *,
+    .barra-lateral-admin *::before,
+    .barra-lateral-admin *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}

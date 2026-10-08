@@ -1,0 +1,384 @@
+:root {
+    --azul: #12336e;
+    --azul-claro: #eaf4ff;
+    --texto: #24324a;
+    --gris: #637089;
+    --borde: #d9e1ec;
+    --fondo: #eef3f9;
+    --verde: #067647;
+    --verde-claro: #e8f7ef;
+    --rojo: #b42318;
+    --rojo-claro: #fff0ee;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--fondo);
+    color: var(--texto);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+}
+
+.acciones {
+    display: flex;
+    width: min(1180px, calc(100% - 32px));
+    justify-content: flex-end;
+    gap: 10px;
+    margin: 22px auto 14px;
+}
+
+.boton {
+    display: inline-flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 17px;
+    border: 1px solid var(--borde);
+    border-radius: 9px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.boton--volver {
+    background: #fff;
+    color: var(--azul);
+}
+
+.boton--imprimir {
+    border-color: var(--azul);
+    background: var(--azul);
+    color: #fff;
+}
+
+.hoja {
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto 32px;
+    padding: 34px;
+    border: 1px solid var(--borde);
+    background: #fff;
+    box-shadow: 0 15px 45px rgba(18, 51, 110, 0.09);
+}
+
+.encabezado {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding-bottom: 22px;
+    border-bottom: 3px solid var(--azul);
+}
+
+.marca {
+    margin: 0 0 7px;
+    color: #4198e8;
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 0.14em;
+}
+
+h1,
+h2,
+p {
+    margin-top: 0;
+}
+
+h1 {
+    margin-bottom: 9px;
+    color: var(--azul);
+    font-size: 2rem;
+}
+
+.periodo {
+    margin-bottom: 0;
+    color: var(--gris);
+    font-size: 0.84rem;
+}
+
+.emision {
+    display: flex;
+    min-width: 220px;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+    text-align: right;
+}
+
+.emision span,
+.filtros span,
+.resumen span {
+    color: var(--gris);
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.emision strong {
+    color: var(--azul);
+    font-size: 0.95rem;
+}
+
+.emision small {
+    color: var(--gris);
+    font-size: 0.68rem;
+}
+
+.filtros {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-top: 18px;
+    border: 1px solid var(--borde);
+    border-radius: 9px;
+    background: #f7faff;
+}
+
+.filtros div {
+    min-width: 0;
+    padding: 12px 14px;
+    border-right: 1px solid var(--borde);
+}
+
+.filtros div:last-child {
+    border-right: 0;
+}
+
+.filtros strong {
+    display: block;
+    overflow: hidden;
+    margin-top: 4px;
+    color: var(--azul);
+    font-size: 0.76rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.resumen {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.resumen article {
+    padding: 14px;
+    border: 1px solid var(--borde);
+    border-radius: 9px;
+}
+
+.resumen strong {
+    display: block;
+    margin: 8px 0 5px;
+    color: var(--azul);
+    font-size: 1.15rem;
+}
+
+.resumen small {
+    color: var(--gris);
+    font-size: 0.65rem;
+}
+
+.detalle {
+    margin-top: 22px;
+}
+
+.ranking-impresion {
+    margin-top: 22px;
+}
+
+.tabla-ranking th:nth-child(1),
+.tabla-ranking td:nth-child(1),
+.tabla-ranking th:nth-child(4),
+.tabla-ranking td:nth-child(4),
+.tabla-ranking th:nth-child(5),
+.tabla-ranking td:nth-child(5) {
+    width: 10%;
+    text-align: center;
+}
+
+.tabla-ranking th:last-child,
+.tabla-ranking td:last-child {
+    width: 16%;
+}
+
+.detalle__cabecera {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 11px;
+}
+
+.detalle__cabecera h2 {
+    margin-bottom: 4px;
+    color: var(--azul);
+    font-size: 1.05rem;
+}
+
+.detalle__cabecera p {
+    margin-bottom: 0;
+    color: var(--gris);
+    font-size: 0.7rem;
+}
+
+.detalle__cabecera > strong {
+    color: var(--azul);
+    font-size: 0.72rem;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    display: table-header-group;
+}
+
+tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+th {
+    padding: 9px 8px;
+    border: 1px solid var(--azul);
+    background: var(--azul);
+    color: #fff;
+    font-size: 0.58rem;
+    letter-spacing: 0.03em;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+td {
+    padding: 9px 8px;
+    border: 1px solid var(--borde);
+    font-size: 0.65rem;
+    vertical-align: middle;
+}
+
+tbody tr:nth-child(even) {
+    background: #f7faff;
+}
+
+.numero,
+.importe {
+    color: var(--azul);
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.importe {
+    text-align: right;
+}
+
+.estado {
+    display: inline-block;
+    padding: 4px 6px;
+    border-radius: 999px;
+    font-size: 0.52rem;
+    font-weight: 900;
+}
+
+.estado--valida {
+    background: var(--verde-claro);
+    color: var(--verde);
+}
+
+.estado--anulada {
+    background: var(--rojo-claro);
+    color: var(--rojo);
+}
+
+.sin-resultados {
+    padding: 28px;
+    border: 1px dashed var(--borde);
+    color: var(--gris);
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+.sin-resultados--compacto {
+    padding: 16px;
+}
+
+footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 18px;
+    padding-top: 10px;
+    border-top: 1px solid var(--borde);
+    color: var(--gris);
+    font-size: 0.6rem;
+}
+
+@media (max-width: 760px) {
+    .encabezado,
+    .detalle__cabecera {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .emision {
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .filtros,
+    .resumen {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .hoja {
+        overflow-x: auto;
+        padding: 22px;
+    }
+
+    table {
+        min-width: 900px;
+    }
+}
+
+@page {
+    size: A4 landscape;
+    margin: 10mm;
+}
+
+@media print {
+    body {
+        background: #fff;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    .no-imprimir {
+        display: none !important;
+    }
+
+    .hoja {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        box-shadow: none;
+    }
+
+    .filtros,
+    .resumen,
+    .ranking-impresion,
+    .detalle__cabecera,
+    footer {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+}

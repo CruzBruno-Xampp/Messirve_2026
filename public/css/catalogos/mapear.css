@@ -1,0 +1,636 @@
+/* =========================================================
+   PASO COMPLETADO
+   ========================================================= */
+
+/*
+ * Esta pantalla necesita más espacio horizontal para mostrar
+ * completos los encabezados y las opciones de cada columna.
+ */
+.pagina-importacion {
+    width: min(1680px, calc(100% - 24px));
+}
+
+.paso--completado {
+    border-color: #9bd8bb;
+    background: var(--exito-fondo);
+}
+
+.paso--completado .paso__numero {
+    background: var(--exito);
+    color: var(--blanco);
+}
+
+.paso--completado strong {
+    color: var(--exito);
+}
+
+
+/* =========================================================
+   RESUMEN DEL ARCHIVO
+   ========================================================= */
+
+.resumen-archivo {
+    display: grid;
+    grid-template-columns: 2fr repeat(3, 1fr);
+    gap: 1px;
+    overflow: hidden;
+    margin-bottom: 22px;
+    border: 1px solid var(--borde);
+    border-radius: 14px;
+    background: var(--borde);
+    box-shadow: var(--sombra);
+}
+
+.resumen-archivo > div {
+    min-width: 0;
+    padding: 17px 19px;
+    background: var(--blanco);
+}
+
+.resumen-archivo span,
+.resumen-archivo strong {
+    display: block;
+}
+
+.resumen-archivo span {
+    margin-bottom: 6px;
+    color: var(--texto-secundario);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.resumen-archivo strong {
+    overflow: hidden;
+    color: var(--azul-oscuro);
+    font-size: 0.92rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   FORMULARIO DE MAPEO
+   ========================================================= */
+
+.formulario-mapeo {
+    display: grid;
+    gap: 20px;
+}
+
+.explicacion-mapeo {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 17px 19px;
+    border: 1px solid #efce62;
+    border-radius: 13px;
+    background: var(--amarillo-suave);
+}
+
+.explicacion-mapeo__icono {
+    display: grid;
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--amarillo);
+    color: var(--azul-oscuro);
+    font-weight: 900;
+}
+
+.explicacion-mapeo strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--azul-oscuro);
+    font-size: 0.9rem;
+}
+
+.explicacion-mapeo p {
+    margin: 0;
+    color: #665b34;
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   LISTADO DE HOJAS
+   ========================================================= */
+
+.lista-hojas {
+    display: grid;
+    min-width: 0;
+    gap: 22px;
+}
+
+.hoja-card {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    border: 2px solid var(--borde);
+    border-radius: var(--radio);
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    opacity: 0.82;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.hoja-card--seleccionada {
+    border-color: var(--azul-principal);
+    opacity: 1;
+    box-shadow:
+        0 12px 38px rgba(25, 45, 90, 0.11),
+        0 0 0 3px rgba(65, 152, 232, 0.08);
+}
+
+.hoja-card__cabecera {
+    display: flex;
+    min-height: 82px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--borde);
+    background:
+        linear-gradient(
+            90deg,
+            rgba(65, 152, 232, 0.1),
+            rgba(255, 255, 255, 0)
+        );
+}
+
+.seleccion-hoja {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 14px;
+}
+
+.checkbox-hoja {
+    flex: 0 0 21px;
+    width: 21px;
+    height: 21px;
+    margin: 0;
+    accent-color: var(--azul-principal);
+}
+
+.seleccion-hoja label {
+    min-width: 0;
+    cursor: pointer;
+}
+
+.seleccion-hoja strong,
+.seleccion-hoja span {
+    display: block;
+}
+
+.seleccion-hoja strong {
+    overflow: hidden;
+    margin-bottom: 5px;
+    color: var(--azul-oscuro);
+    font-size: 1.08rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.seleccion-hoja span {
+    color: var(--texto-secundario);
+    font-size: 0.79rem;
+}
+
+.estado-hoja {
+    flex-shrink: 0;
+    padding: 7px 11px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.estado-hoja--detectada {
+    background: var(--exito-fondo);
+    color: var(--exito);
+}
+
+.estado-hoja--revision {
+    background: var(--amarillo-suave);
+    color: #806300;
+}
+
+.hoja-card__contenido {
+    display: grid;
+    min-width: 0;
+    gap: 0;
+}
+
+
+/* =========================================================
+   CONFIGURACIÓN DE CADA HOJA
+   ========================================================= */
+
+.configuracion-hoja,
+.vista-previa,
+.mapeo-columnas {
+    min-width: 0;
+    max-width: 100%;
+    padding: 24px;
+}
+
+.configuracion-hoja,
+.vista-previa {
+    border-bottom: 1px solid var(--borde);
+}
+
+.configuracion-hoja__titulo {
+    margin-bottom: 3px;
+}
+
+.configuracion-hoja__titulo h2,
+.seccion-titulo h2 {
+    margin: 0;
+    color: var(--azul-oscuro);
+    font-size: 1.05rem;
+}
+
+.configuracion-hoja__titulo p,
+.seccion-titulo p {
+    margin: 5px 0 0;
+    color: var(--texto-secundario);
+    font-size: 0.8rem;
+    line-height: 1.45;
+}
+
+.configuracion-hoja .campos-grid {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.opcion-iva--hoja {
+    margin: 0;
+}
+
+
+/* =========================================================
+   TÍTULOS DE SECCIONES
+   ========================================================= */
+
+.seccion-titulo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 18px;
+}
+
+.seccion-titulo > span {
+    flex-shrink: 0;
+    padding: 7px 11px;
+    border-radius: 20px;
+    background: var(--azul-suave);
+    color: var(--azul-oscuro);
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   VISTA PREVIA DEL EXCEL
+   ========================================================= */
+
+.vista-previa {
+    background: #fbfcfe;
+}
+
+.tabla-contenedor {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    max-height: 430px;
+    overflow-x: scroll !important;
+    overflow-y: auto;
+    border: 1px solid var(--borde);
+    border-radius: 11px;
+    background: var(--blanco);
+    scrollbar-gutter: stable;
+    scrollbar-color: #aac7e3 #edf2f7;
+    scrollbar-width: auto;
+}
+
+.tabla-contenedor::-webkit-scrollbar {
+    width: 20px;
+    height: 20px;
+}
+
+.tabla-contenedor::-webkit-scrollbar-track {
+    border: 1px solid #8eb9df;
+    background: #dceaf6;
+}
+
+.tabla-contenedor::-webkit-scrollbar-thumb {
+    border: 3px solid #dceaf6;
+    border-radius: 10px;
+    background: #287fc8;
+}
+
+.tabla-contenedor::-webkit-scrollbar-thumb:hover {
+    background: var(--azul-principal);
+}
+
+.tabla-excel {
+    width: max-content;
+    min-width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.75rem;
+}
+
+.tabla-excel th,
+.tabla-excel td {
+    min-width: 125px;
+    max-width: 220px;
+    height: 42px;
+    padding: 9px 11px;
+    overflow: hidden;
+    border-right: 1px solid var(--borde);
+    border-bottom: 1px solid var(--borde);
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tabla-excel thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    min-width: 100px;
+    background: var(--azul-oscuro);
+    color: var(--blanco);
+    font-weight: 800;
+    text-align: center;
+}
+
+.tabla-excel thead th:first-child {
+    left: 0;
+    z-index: 4;
+    min-width: 60px;
+}
+
+.tabla-excel tbody th {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    min-width: 60px;
+    background: #eef3f8;
+    color: var(--texto-secundario);
+    font-weight: 800;
+    text-align: center;
+}
+
+.tabla-excel tbody tr:last-child th,
+.tabla-excel tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.tabla-excel th:last-child,
+.tabla-excel td:last-child {
+    border-right: 0;
+}
+
+.tabla-excel tbody tr:hover td {
+    background: #f4f9ff;
+}
+
+/*
+ * Fila confirmada como encabezado.
+ */
+.tabla-excel tbody tr.fila-seleccionada th,
+.tabla-excel tbody tr.fila-seleccionada td {
+    border-color: #e3ba31;
+    background: var(--amarillo-suave);
+    color: var(--azul-oscuro);
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   MAPEO DE COLUMNAS
+   ========================================================= */
+
+.mapeo-grid {
+    display: grid;
+    width: 1800px;
+    min-width: 1800px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 28px;
+}
+
+.mapeo-columnas {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: scroll !important;
+    scrollbar-gutter: stable;
+    scrollbar-color: #287fc8 #dceaf6;
+    scrollbar-width: auto;
+}
+
+.mapeo-columnas::-webkit-scrollbar {
+    height: 20px;
+}
+
+.mapeo-columnas::-webkit-scrollbar-track {
+    border: 1px solid #8eb9df;
+    border-radius: 10px;
+    background: #dceaf6;
+}
+
+.mapeo-columnas::-webkit-scrollbar-thumb {
+    border: 3px solid #dceaf6;
+    border-radius: 10px;
+    background: #287fc8;
+}
+
+.mapeo-columnas::-webkit-scrollbar-thumb:hover {
+    background: var(--azul-principal);
+}
+
+.campo-mapeo {
+    min-width: 0;
+}
+
+.campo-mapeo select {
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    height: 52px;
+    overflow: hidden;
+    border: 1px solid #cfd6e0;
+    border-radius: 9px;
+    outline: none;
+    background: var(--blanco);
+    color: var(--texto);
+    padding: 0 38px 0 12px;
+    font-size: 0.88rem;
+    text-overflow: ellipsis;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.campo-mapeo select:hover {
+    border-color: #9bb8d8;
+}
+
+.campo-mapeo select:focus {
+    border-color: var(--azul-principal);
+    box-shadow: 0 0 0 4px rgba(65, 152, 232, 0.14);
+}
+
+.campo-mapeo select:required:invalid {
+    border-color: #e2a5a5;
+    background: #fffafa;
+}
+
+
+/* =========================================================
+   ACCIONES FINALES
+   ========================================================= */
+
+.acciones--mapeo {
+    justify-content: space-between;
+    padding-top: 5px;
+}
+
+.acciones__derecha {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+#contador-hojas {
+    color: var(--texto-secundario);
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   HOJA NO SELECCIONADA
+   ========================================================= */
+
+.hoja-card:not(.hoja-card--seleccionada)
+    .hoja-card__contenido {
+    filter: grayscale(0.15);
+}
+
+.hoja-card:not(.hoja-card--seleccionada)
+    .configuracion-hoja,
+.hoja-card:not(.hoja-card--seleccionada)
+    .vista-previa,
+.hoja-card:not(.hoja-card--seleccionada)
+    .mapeo-columnas {
+    background: #fafafa;
+}
+
+
+/* =========================================================
+   DISEÑO RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1000px) {
+    .resumen-archivo {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .mapeo-grid {
+        width: 100%;
+        min-width: 0;
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+}
+
+@media (max-width: 760px) {
+    .resumen-archivo {
+        grid-template-columns: 1fr;
+    }
+
+    .hoja-card__cabecera {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 13px;
+    }
+
+    .estado-hoja {
+        margin-left: 35px;
+    }
+
+    .mapeo-grid {
+        width: 100%;
+        min-width: 0;
+        grid-template-columns: 1fr;
+    }
+
+    .seccion-titulo {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .configuracion-hoja,
+    .vista-previa,
+    .mapeo-columnas {
+        padding: 19px;
+    }
+
+    .acciones--mapeo {
+        align-items: stretch;
+        flex-direction: column-reverse;
+    }
+
+    .acciones__derecha {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    #contador-hojas {
+        text-align: center;
+    }
+}
+
+@media (max-width: 520px) {
+    .resumen-archivo > div {
+        padding: 14px 16px;
+    }
+
+    .hoja-card__cabecera {
+        padding: 16px;
+    }
+
+    .configuracion-hoja,
+    .vista-previa,
+    .mapeo-columnas {
+        padding: 16px;
+    }
+
+    .tabla-excel th,
+    .tabla-excel td {
+        min-width: 110px;
+        max-width: 180px;
+    }
+}
+
+
+/* Reduce animaciones cuando el dispositivo lo solicita. */
+
+@media (prefers-reduced-motion: reduce) {
+    .hoja-card {
+        transition: none;
+    }
+}
