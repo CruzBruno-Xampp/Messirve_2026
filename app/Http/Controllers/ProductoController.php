@@ -22,6 +22,9 @@ class ProductoController extends Controller
      */
     public function index(Request $request)
     {
+        // Mantiene actualizadas las listas que vencen o comienzan hoy.
+        CatalogoProveedor::sincronizarVigencias();
+
         $busqueda = trim((string) $request->input('buscar', ''));
         $estado = (string) $request->input('estado', '1');
 
@@ -90,6 +93,22 @@ class ProductoController extends Controller
         ]);
 
         $catalogoReferencia = $detalle->catalogoProveedor;
+
+        if ($catalogoReferencia !== null) {
+            CatalogoProveedor::sincronizarVigencias(
+                (int) $catalogoReferencia->idproveedor
+            );
+
+            $detalle->unsetRelations();
+            $detalle->load([
+                'catalogoProveedor.proveedor',
+                'producto.alicuotaIva',
+                'alicuotaIva',
+            ]);
+
+            $catalogoReferencia = $detalle->catalogoProveedor;
+        }
+
         $proveedorReferencia = $catalogoReferencia?->proveedor;
 
         if (
@@ -1069,6 +1088,13 @@ class ProductoController extends Controller
                 : null;
 
         /*
+         * Recalcula las vigencias antes de armar filtros, tarjetas y acciones.
+         * Si hay un proveedor elegido se actualiza sólo ese; si se están
+         * consultando todos, se sincronizan todos los proveedores.
+         */
+        CatalogoProveedor::sincronizarVigencias($idProveedorNumero);
+
+        /*
          * Cuando se selecciona un proveedor recuperamos todas sus listas:
          * la vigente y las históricas.
          */
@@ -1300,6 +1326,15 @@ class ProductoController extends Controller
 
         $detalle->load('catalogoProveedor.proveedor');
 
+        if ($detalle->catalogoProveedor !== null) {
+            CatalogoProveedor::sincronizarVigencias(
+                (int) $detalle->catalogoProveedor->idproveedor
+            );
+
+            $detalle->unsetRelations();
+            $detalle->load('catalogoProveedor.proveedor');
+        }
+
         if (
             $detalle->catalogoProveedor === null
             || !$detalle->catalogoProveedor->estado
@@ -1471,6 +1506,29 @@ class ProductoController extends Controller
         Request $request,
         DetalleCatalogo $detalle
     ) {
+        $detalle->load('catalogoProveedor');
+
+        if ($detalle->catalogoProveedor !== null) {
+            CatalogoProveedor::sincronizarVigencias(
+                (int) $detalle->catalogoProveedor->idproveedor
+            );
+
+            $detalle->unsetRelations();
+            $detalle->load('catalogoProveedor');
+        }
+
+        if (
+            $detalle->catalogoProveedor === null
+            || !$detalle->catalogoProveedor->estado
+        ) {
+            return redirect()
+                ->route('productos.catalogo')
+                ->with(
+                    'error',
+                    'El artículo ya no pertenece a la lista vigente del proveedor.'
+                );
+        }
+
         $accion = $request->validate(
             [
                 'accion' => [

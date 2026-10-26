@@ -102,7 +102,7 @@
 
 .tabla-detalle-venta {
     width: 100%;
-    min-width: 1080px;
+    min-width: 1240px;
     border-collapse: collapse;
 }
 
@@ -528,3 +528,5 @@ body.modal-abierto {
         width: 100%;
     }
 }
+\n\n/* =========================================================\n   Desglose de descuentos de la venta\n   ========================================================= */\n\n.descuento-detalle--adicional .descuento-detalle__porcentaje {\n    background: #fff4cf;\n    color: #7a5600;\n}\n\n.totales-detalle {\n    flex-wrap: wrap;\n}\n\n.totales-detalle > div {\n    min-width: 175px;\n}\n\n.totales-detalle .totales-detalle__total {\n    min-width: 230px;\n}\n
+.totales-detalle__recargo{background:#fff9e8!important}.totales-detalle__recargo span{color:#806000}.totales-detalle__recargo strong{color:#6b5100}

@@ -5,11 +5,102 @@
 
 body.con-barra-lateral {
     --barra-lateral-ancho: 228px;
+    padding-top: 54px;
     padding-left: var(--barra-lateral-ancho);
 }
 
 body.menu-administrativo-abierto {
     overflow: hidden;
+}
+
+
+/* =========================================================
+   Barra superior de sesión administrativa
+   ========================================================= */
+
+.barra-sesion-admin {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: var(--barra-lateral-ancho, 228px);
+    z-index: 990;
+    display: flex;
+    min-height: 54px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 18px;
+    border-bottom: 1px solid #d7e2ee;
+    background: rgba(247, 250, 254, 0.96);
+    box-shadow: 0 5px 16px rgba(16, 44, 100, 0.07);
+    backdrop-filter: blur(8px);
+}
+
+.barra-sesion-admin__usuario {
+    display: flex;
+    min-width: 0;
+    align-items: baseline;
+    gap: 5px;
+    color: #637089;
+    font-size: 0.78rem;
+}
+
+.barra-sesion-admin__usuario strong {
+    overflow: hidden;
+    max-width: 240px;
+    color: #102c64;
+    font-size: 0.82rem;
+    font-weight: 900;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.barra-sesion-admin__formulario {
+    margin: 0;
+}
+
+.barra-sesion-admin__boton {
+    display: inline-flex;
+    min-height: 38px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 13px;
+    border: 1px solid #c7d7e8;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #102c64;
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(16, 44, 100, 0.07);
+    transition:
+        border-color 0.18s ease,
+        background-color 0.18s ease,
+        color 0.18s ease,
+        transform 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.barra-sesion-admin__boton svg {
+    width: 19px;
+    height: 19px;
+    flex: 0 0 19px;
+    fill: currentColor;
+}
+
+.barra-sesion-admin__boton:hover,
+.barra-sesion-admin__boton:focus-visible {
+    border-color: #d96969;
+    outline: none;
+    background: #fff3f3;
+    color: #a72121;
+    box-shadow: 0 6px 14px rgba(167, 33, 33, 0.11);
+    transform: translateY(-1px);
+}
+
+.barra-sesion-admin__boton:active {
+    transform: translateY(0);
 }
 
 .barra-lateral-admin {
@@ -34,10 +125,10 @@ body.menu-administrativo-abierto {
 .barra-lateral__cabecera {
     position: relative;
     display: flex;
-    min-height: 110px;
+    min-height: 88px;
     align-items: center;
     justify-content: center;
-    padding: 18px;
+    padding: 10px 16px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.13);
 }
 
@@ -45,7 +136,7 @@ body.menu-administrativo-abierto {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 13px;
+    gap: 12px;
     color: #ffffff;
     text-decoration: none;
 }
@@ -75,7 +166,7 @@ body.menu-administrativo-abierto {
 }
 
 .barra-lateral__marca-texto strong {
-    font-size: 1.04rem;
+    font-size: 1.08rem;
     font-weight: 950;
     letter-spacing: 0.035em;
     white-space: nowrap;
@@ -84,7 +175,7 @@ body.menu-administrativo-abierto {
 .barra-lateral__marca-texto small {
     margin-top: 4px;
     color: #a9d6fb;
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     font-weight: 800;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -100,17 +191,17 @@ body.menu-administrativo-abierto {
     min-height: 0;
     flex: 1;
     flex-direction: column;
-    gap: 6px;
+    gap: 3px;
     overflow: visible;
-    padding: 18px 14px;
+    padding: 8px 12px 6px;
     scrollbar-color: rgba(114, 185, 246, 0.7) transparent;
     scrollbar-width: thin;
 }
 
 .barra-lateral__titulo {
-    margin: 0 12px 7px;
+    margin: 0 10px 2px;
     color: rgba(255, 255, 255, 0.55);
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     font-weight: 900;
     letter-spacing: 0.14em;
     text-transform: uppercase;
@@ -126,14 +217,14 @@ body.menu-administrativo-abierto {
     width: 100%;
     min-height: 58px;
     align-items: center;
-    gap: 14px;
-    padding: 10px 14px;
+    gap: 13px;
+    padding: 8px 12px;
     border: 1px solid transparent;
     border-radius: 12px;
     background: transparent;
     color: rgba(255, 255, 255, 0.9);
     font-family: inherit;
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     font-weight: 800;
     text-align: left;
     text-decoration: none;
@@ -316,7 +407,8 @@ body.menu-administrativo-abierto {
 }
 
 .barra-lateral__pie {
-    padding: 18px 14px;
+    flex: 0 0 auto;
+    padding: 8px 12px;
     border-top: 1px solid rgba(255, 255, 255, 0.12);
     color: rgba(255, 255, 255, 0.53);
     font-size: 0.68rem;
@@ -342,10 +434,244 @@ body.menu-administrativo-abierto {
     }
 }
 
+
+/*
+ * Ajustes por altura de pantalla en escritorio.
+ * Mantienen todos los módulos visibles sin deformar la barra lateral.
+ */
+@media (min-width: 1051px) and (max-height: 720px) {
+    .barra-lateral__cabecera {
+        min-height: 84px;
+        padding: 10px 14px;
+    }
+
+    .barra-lateral__marca-icono {
+        flex-basis: 40px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .barra-lateral__marca-icono svg {
+        width: 28px;
+        height: 28px;
+    }
+
+    .barra-lateral__marca-texto strong {
+        font-size: 0.96rem;
+    }
+
+    .barra-lateral__marca-texto small {
+        margin-top: 3px;
+        font-size: 0.64rem;
+    }
+
+    .barra-lateral__navegacion {
+        gap: 2px;
+        padding: 8px 10px 7px;
+    }
+
+    .barra-lateral__titulo {
+        margin: 0 9px 2px;
+        font-size: 0.64rem;
+    }
+
+    .barra-lateral__item {
+        min-height: 46px;
+        gap: 10px;
+        padding: 5px 10px;
+        border-radius: 10px;
+        font-size: 0.82rem;
+    }
+
+    .barra-lateral__icono {
+        flex-basis: 29px;
+        width: 29px;
+        height: 29px;
+    }
+
+    .barra-lateral__icono svg {
+        width: 27px;
+        height: 27px;
+    }
+
+    .barra-lateral__pie {
+        padding: 7px 10px;
+        font-size: 0.62rem;
+    }
+}
+
+@media (min-width: 1051px) and (max-height: 600px) {
+    .barra-lateral__cabecera {
+        min-height: 72px;
+        padding: 7px 12px;
+    }
+
+    .barra-lateral__marca-icono {
+        flex-basis: 36px;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+    }
+
+    .barra-lateral__marca-icono svg {
+        width: 25px;
+        height: 25px;
+    }
+
+    .barra-lateral__marca-texto strong {
+        font-size: 0.9rem;
+    }
+
+    .barra-lateral__marca-texto small {
+        font-size: 0.58rem;
+    }
+
+    .barra-lateral__navegacion {
+        gap: 1px;
+        padding: 5px 9px;
+    }
+
+    .barra-lateral__titulo {
+        margin-bottom: 1px;
+        font-size: 0.6rem;
+    }
+
+    .barra-lateral__item {
+        min-height: 40px;
+        gap: 9px;
+        padding: 4px 9px;
+        font-size: 0.76rem;
+    }
+
+    .barra-lateral__icono {
+        flex-basis: 25px;
+        width: 25px;
+        height: 25px;
+    }
+
+    .barra-lateral__icono svg {
+        width: 23px;
+        height: 23px;
+    }
+
+    .barra-lateral__pie {
+        padding: 5px 8px;
+        font-size: 0.58rem;
+    }
+}
+
+
+/*
+ * En escritorio normal se muestran botones grandes.
+ * Sólo se compactan cuando la altura disponible realmente es reducida.
+ */
+@media (min-width: 1051px) and (max-height: 740px) {
+    .barra-lateral__cabecera {
+        min-height: 78px;
+        padding: 7px 14px;
+    }
+
+    .barra-lateral__marca-icono {
+        flex-basis: 42px;
+        width: 42px;
+        height: 42px;
+    }
+
+    .barra-lateral__marca-icono svg {
+        width: 30px;
+        height: 30px;
+    }
+
+    .barra-lateral__marca-texto strong {
+        font-size: 1rem;
+    }
+
+    .barra-lateral__marca-texto small {
+        font-size: 0.65rem;
+    }
+
+    .barra-lateral__navegacion {
+        gap: 2px;
+        padding: 6px 10px 5px;
+    }
+
+    .barra-lateral__titulo {
+        margin-bottom: 1px;
+        font-size: 0.65rem;
+    }
+
+    .barra-lateral__item {
+        min-height: 49px;
+        gap: 11px;
+        padding: 5px 10px;
+        font-size: 0.84rem;
+    }
+
+    .barra-lateral__icono {
+        flex-basis: 30px;
+        width: 30px;
+        height: 30px;
+    }
+
+    .barra-lateral__icono svg {
+        width: 28px;
+        height: 28px;
+    }
+
+    .barra-lateral__pie {
+        padding: 6px 10px;
+        font-size: 0.62rem;
+    }
+}
+
+@media (min-width: 1051px) and (max-height: 640px) {
+    .barra-lateral__cabecera {
+        min-height: 70px;
+    }
+
+    .barra-lateral__item {
+        min-height: 43px;
+        font-size: 0.78rem;
+    }
+
+    .barra-lateral__icono {
+        flex-basis: 26px;
+        width: 26px;
+        height: 26px;
+    }
+
+    .barra-lateral__icono svg {
+        width: 24px;
+        height: 24px;
+    }
+}
+
 @media (max-width: 1050px) {
     body.con-barra-lateral {
-        padding-top: 78px;
+        padding-top: 130px;
         padding-left: 0;
+    }
+
+    .barra-sesion-admin {
+        top: 78px;
+        left: 0;
+        min-height: 52px;
+        padding: 7px 14px;
+    }
+
+    .barra-sesion-admin__boton {
+        min-height: 36px;
+        padding: 7px 11px;
+        font-size: 0.75rem;
+    }
+
+    .barra-sesion-admin__usuario {
+        font-size: 0.72rem;
+    }
+
+    .barra-sesion-admin__usuario strong {
+        max-width: 150px;
+        font-size: 0.76rem;
     }
 
     .barra-lateral-admin {
@@ -448,6 +774,24 @@ body.menu-administrativo-abierto {
 }
 
 @media (max-width: 520px) {
+    .barra-sesion-admin {
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+
+    .barra-sesion-admin__boton {
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+
+    .barra-sesion-admin__usuario span {
+        display: none;
+    }
+
+    .barra-sesion-admin__usuario strong {
+        max-width: 115px;
+    }
+
     .barra-lateral__marca-texto strong {
         font-size: 0.92rem;
     }

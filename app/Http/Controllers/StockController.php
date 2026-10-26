@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DetalleCompra;
 use App\Models\Producto;
 use App\Models\Stock;
 use App\Models\Sucursal;
@@ -104,12 +105,6 @@ class StockController extends Controller
                 '=',
                 'm.idtipomovimiento'
             )
-            ->join(
-                'ventas as v',
-                'v.idventa',
-                '=',
-                'm.idventa'
-            )
             ->leftJoin(
                 'sucursales as origen',
                 'origen.idsucursal',
@@ -124,7 +119,6 @@ class StockController extends Controller
             )
             ->where('tm.codigo', 'VENTA_STOCK')
             ->where('m.estado', 1)
-            ->whereNotIn('v.estado', ['ANULADA', 'CANCELADA'])
             ->whereNotNull('m.idsucursaldestino')
             ->whereColumn('m.idsucursalorigen', '<>', 'm.idsucursaldestino')
             ->when(
@@ -183,6 +177,98 @@ class StockController extends Controller
                 return $notificacion;
             });
 
+        /*
+         * Paso 6.2: unidades buenas, unidades con problema y pendientes de entrega.
+         */
+        $esDueno = $usuario?->rol?->nombre === 'DUEÑO';
+
+        $consultaRecepcionBase = DB::table('detalle_compra as dc')
+            ->join('compras as c', 'c.idcompra', '=', 'dc.idcompra')
+            ->join('proveedores as pr', 'pr.idproveedor', '=', 'c.idproveedor')
+            ->join('productos as p', 'p.idproducto', '=', 'dc.idproducto')
+            ->join('sucursales as s', 's.idsucursal', '=', 'c.idsucursal')
+            ->leftJoin('stock as st', function ($join) {
+                $join
+                    ->on('st.idproducto', '=', 'dc.idproducto')
+                    ->on('st.idsucursal', '=', 'c.idsucursal')
+                    ->where('st.estado', 1);
+            })
+            ->whereIn('c.estado', ['PENDIENTE', 'PARCIAL'])
+            ->where('p.estado', 1)
+            ->where('pr.estado', 1)
+            ->where('s.estado', 1)
+            ->when(
+                !$esDueno && $usuario?->idsucursal,
+                fn ($consulta, $idUsuarioSucursal) => $consulta->where(
+                    'c.idsucursal',
+                    (int) $idUsuarioSucursal
+                )
+            );
+
+        // Los filtros superiores también deben afectar Recepciones pendientes
+        // y Productos con problemas para que toda la pantalla responda igual.
+        if ($busqueda !== '') {
+            $consultaRecepcionBase->where(function ($consulta) use ($busqueda) {
+                $consulta
+                    ->where('p.codigointerno', 'like', "%{$busqueda}%")
+                    ->orWhere('p.codigofabricante', 'like', "%{$busqueda}%")
+                    ->orWhere('p.codigobarra', 'like', "%{$busqueda}%")
+                    ->orWhere('p.descripcion', 'like', "%{$busqueda}%");
+            });
+        }
+
+        if ($idSucursal) {
+            $consultaRecepcionBase->where('c.idsucursal', (int) $idSucursal);
+        }
+
+        match ($disponibilidad) {
+            'con_stock' => $consultaRecepcionBase
+                ->whereRaw('COALESCE(st.stockactual, 0) > 0'),
+            'sin_stock' => $consultaRecepcionBase
+                ->whereRaw('COALESCE(st.stockactual, 0) = 0'),
+            'bajo_minimo' => $consultaRecepcionBase
+                ->whereRaw('COALESCE(st.stockminimo, 0) > 0')
+                ->whereRaw('COALESCE(st.stockactual, 0) <= COALESCE(st.stockminimo, 0)'),
+            default => null,
+        };
+
+        $recepcionesPendientes = (clone $consultaRecepcionBase)
+            ->whereRaw('(COALESCE(dc.cantidadrecibida, 0) + COALESCE(dc.cantidadproblema, 0)) < dc.cantidad')
+            ->orderBy('c.fecha')
+            ->orderBy('c.idcompra')
+            ->orderBy('p.descripcion')
+            ->limit(30)
+            ->get([
+                'dc.iddetallecompra', 'dc.idcompra', 'dc.idproducto',
+                'dc.cantidad', 'dc.cantidadrecibida', 'dc.cantidadproblema',
+                'dc.estadoincidencia', 'c.estado as estado_compra', 'c.fecha',
+                'pr.razonsocial as proveedor', 'p.codigointerno', 'p.codigobarra',
+                'p.descripcion', 's.idsucursal', 's.nombre as sucursal',
+                's.tipo as tipo_sucursal',
+                DB::raw('COALESCE(st.stockactual, 0) as stockactual'),
+                DB::raw('COALESCE(st.stockminimo, 0) as stockminimo'),
+                'st.stockmaximo',
+                DB::raw('(dc.cantidad - COALESCE(dc.cantidadrecibida, 0) - COALESCE(dc.cantidadproblema, 0)) as cantidadpendienteentrega'),
+            ]);
+
+        $problemasPendientes = (clone $consultaRecepcionBase)
+            ->where('dc.cantidadproblema', '>', 0)
+            ->where('dc.estadoincidencia', 'PENDIENTE')
+            ->orderBy('c.fecha')
+            ->orderBy('c.idcompra')
+            ->orderBy('p.descripcion')
+            ->limit(30)
+            ->get([
+                'dc.iddetallecompra', 'dc.idcompra', 'dc.idproducto',
+                'dc.cantidad', 'dc.cantidadrecibida', 'dc.cantidadproblema',
+                'dc.observacionrecepcion', 'dc.estadoincidencia',
+                'c.estado as estado_compra', 'c.fecha',
+                'pr.razonsocial as proveedor', 'p.codigointerno', 'p.codigobarra',
+                'p.descripcion', 's.idsucursal', 's.nombre as sucursal',
+                's.tipo as tipo_sucursal',
+                DB::raw('COALESCE(st.stockactual, 0) as stockactual'),
+            ]);
+
         return view('stock.index', compact(
             'stocks',
             'sucursales',
@@ -190,8 +276,223 @@ class StockController extends Controller
             'busqueda',
             'idSucursal',
             'disponibilidad',
-            'notificacionesVenta'
+            'notificacionesVenta',
+            'recepcionesPendientes',
+            'problemasPendientes'
         ));
+    }
+
+    public function recibirCompra(Request $request, DetalleCompra $detalleCompra): RedirectResponse
+    {
+        $datos = $request->validate([
+            'cantidad_llegada' => ['required', 'integer', 'min:1', 'max:999999'],
+            'cantidad_buena' => ['required', 'integer', 'min:0', 'max:999999'],
+            'cantidad_problema' => ['required', 'integer', 'min:0', 'max:999999'],
+            'observacion_recepcion' => ['nullable', 'string', 'max:1500'],
+            'stockminimo_recepcion' => ['required', 'integer', 'min:0', 'max:999999'],
+            'stockmaximo_recepcion' => ['nullable', 'integer', 'min:0', 'max:999999', 'gte:stockminimo_recepcion'],
+        ]);
+
+        $llegada = (int) $datos['cantidad_llegada'];
+        $buenas = (int) $datos['cantidad_buena'];
+        $problemas = (int) $datos['cantidad_problema'];
+        $observacion = trim((string) ($datos['observacion_recepcion'] ?? ''));
+
+        if (($buenas + $problemas) !== $llegada) {
+            throw ValidationException::withMessages(['cantidad_llegada' => 'Las unidades buenas y las unidades con problemas deben sumar la cantidad que llegó.']);
+        }
+        if ($problemas > 0 && $observacion === '') {
+            throw ValidationException::withMessages(['observacion_recepcion' => 'Escribí una observación para las unidades con problemas.']);
+        }
+
+        DB::transaction(function () use ($detalleCompra, $datos, $llegada, $buenas, $problemas, $observacion) {
+            $detalle = DetalleCompra::query()->whereKey($detalleCompra->getKey())->lockForUpdate()->firstOrFail();
+            $compra = DB::table('compras')->where('idcompra', $detalle->idcompra)->lockForUpdate()->first();
+
+            if (!$compra || !in_array($compra->estado, ['PENDIENTE', 'PARCIAL'], true)) {
+                throw ValidationException::withMessages(['compra' => 'La compra ya no está disponible para recibir mercadería.']);
+            }
+            $this->comprobarSucursalCompra((int) $compra->idsucursal);
+
+            $pendienteEntrega = max(0, (int) $detalle->cantidad - (int) $detalle->cantidadrecibida - (int) $detalle->cantidadproblema);
+            if ($llegada > $pendienteEntrega) {
+                throw ValidationException::withMessages(['cantidad_llegada' => "Sólo quedan {$pendienteEntrega} unidades pendientes de entrega."]);
+            }
+
+            $nuevoProblema = (int) $detalle->cantidadproblema + $problemas;
+            $detalle->update([
+                'cantidadrecibida' => (int) $detalle->cantidadrecibida + $buenas,
+                'cantidadproblema' => $nuevoProblema,
+                'estadoincidencia' => $nuevoProblema > 0 ? 'PENDIENTE' : ($detalle->estadoincidencia === 'RESUELTA' ? 'RESUELTA' : 'SIN_PROBLEMA'),
+                'observacionrecepcion' => $this->agregarObservacionRecepcion(
+                    $detalle->observacionrecepcion,
+                    $problemas > 0
+                        ? sprintf('Recepción: %d correcta(s), %d con problema. %s', $buenas, $problemas, $observacion)
+                        : ($observacion !== '' ? sprintf('Recepción: %d correcta(s). %s', $buenas, $observacion) : null)
+                ),
+            ]);
+
+            if ($buenas > 0) {
+                $this->sumarStockCompra(
+                    $detalle, (int) $compra->idsucursal, $buenas,
+                    (int) $datos['stockminimo_recepcion'],
+                    filled($datos['stockmaximo_recepcion'] ?? null) ? (int) $datos['stockmaximo_recepcion'] : null,
+                    (int) $compra->idcompra,
+                    sprintf('Recepción de compra. %d unidad(es) aceptada(s).', $buenas)
+                );
+            } else {
+                // Si toda la entrega llegó observada no hay movimiento de stock,
+                // pero conservamos los límites definidos para esa ubicación.
+                $stock = Stock::query()
+                    ->where('idproducto', $detalle->idproducto)
+                    ->where('idsucursal', (int) $compra->idsucursal)
+                    ->lockForUpdate()
+                    ->first();
+
+                $valores = [
+                    'stockminimo' => (int) $datos['stockminimo_recepcion'],
+                    'stockmaximo' => filled($datos['stockmaximo_recepcion'] ?? null)
+                        ? (int) $datos['stockmaximo_recepcion']
+                        : null,
+                    'estado' => 1,
+                ];
+
+                if ($stock) {
+                    $stock->update($valores);
+                } else {
+                    Stock::create([
+                        'idproducto' => $detalle->idproducto,
+                        'idsucursal' => (int) $compra->idsucursal,
+                        'stockactual' => 0,
+                        ...$valores,
+                    ]);
+                }
+            }
+
+            $this->actualizarEstadoCompra((int) $compra->idcompra);
+        });
+
+        return redirect()->route('stock.index')->with('success',
+            $problemas > 0
+                ? 'La recepción se registró. Las unidades buenas ingresaron al stock y las observadas quedaron pendientes de reemplazo.'
+                : 'La recepción se registró y las unidades buenas ingresaron al stock.'
+        );
+    }
+
+    public function registrarReemplazo(Request $request, DetalleCompra $detalleCompra): RedirectResponse
+    {
+        $datos = $request->validate([
+            'cantidad_reemplazo' => ['required', 'integer', 'min:1', 'max:999999'],
+            'observacion_reemplazo' => ['nullable', 'string', 'max:1500'],
+        ]);
+        $cantidad = (int) $datos['cantidad_reemplazo'];
+        $observacion = trim((string) ($datos['observacion_reemplazo'] ?? ''));
+
+        DB::transaction(function () use ($detalleCompra, $cantidad, $observacion) {
+            $detalle = DetalleCompra::query()->whereKey($detalleCompra->getKey())->lockForUpdate()->firstOrFail();
+            $compra = DB::table('compras')->where('idcompra', $detalle->idcompra)->lockForUpdate()->first();
+            if (!$compra || $compra->estado === 'ANULADA') {
+                throw ValidationException::withMessages(['compra' => 'La compra no está disponible para registrar reemplazos.']);
+            }
+            $this->comprobarSucursalCompra((int) $compra->idsucursal);
+
+            $pendientes = (int) $detalle->cantidadproblema;
+            if ($pendientes <= 0 || $detalle->estadoincidencia !== 'PENDIENTE') {
+                throw ValidationException::withMessages(['cantidad_reemplazo' => 'Este producto ya no tiene reemplazos pendientes.']);
+            }
+            if ($cantidad > $pendientes) {
+                throw ValidationException::withMessages(['cantidad_reemplazo' => "Sólo hay {$pendientes} unidades pendientes de reemplazo."]);
+            }
+
+            $nuevoProblema = $pendientes - $cantidad;
+            $nuevoRecibido = (int) $detalle->cantidadrecibida + $cantidad;
+            if ($nuevoRecibido > (int) $detalle->cantidad) {
+                throw ValidationException::withMessages(['cantidad_reemplazo' => 'El reemplazo superaría la cantidad pedida.']);
+            }
+
+            $detalle->update([
+                'cantidadrecibida' => $nuevoRecibido,
+                'cantidadproblema' => $nuevoProblema,
+                'estadoincidencia' => $nuevoProblema === 0 ? 'RESUELTA' : 'PENDIENTE',
+                'observacionrecepcion' => $this->agregarObservacionRecepcion(
+                    $detalle->observacionrecepcion,
+                    sprintf('Reemplazo recibido: %d unidad(es)%s.', $cantidad, $observacion !== '' ? ' — ' . rtrim($observacion, '.') : '')
+                ),
+            ]);
+
+            $stock = Stock::query()->where('idproducto', $detalle->idproducto)->where('idsucursal', (int) $compra->idsucursal)->first();
+            $this->sumarStockCompra(
+                $detalle, (int) $compra->idsucursal, $cantidad,
+                (int) ($stock?->stockminimo ?? 0),
+                $stock?->stockmaximo === null ? null : (int) $stock->stockmaximo,
+                (int) $compra->idcompra,
+                sprintf('Reemplazo de incidencia de compra. %d unidad(es) aceptada(s).', $cantidad)
+            );
+            $this->actualizarEstadoCompra((int) $compra->idcompra);
+        });
+
+        return redirect()->route('stock.index')->with('success', 'El reemplazo se registró y las unidades aceptadas se sumaron al stock.');
+    }
+
+    private function sumarStockCompra(DetalleCompra $detalle, int $idSucursal, int $cantidad, int $stockMinimo, ?int $stockMaximo, int $idCompra, string $observacion): void
+    {
+        $stock = Stock::query()->where('idproducto', $detalle->idproducto)->where('idsucursal', $idSucursal)->lockForUpdate()->first();
+        $anterior = (int) ($stock?->stockactual ?? 0);
+        $posterior = $anterior + $cantidad;
+        if ($posterior > 999999999) {
+            throw ValidationException::withMessages(['stock' => 'La recepción supera el límite permitido de stock.']);
+        }
+
+        if ($stock) {
+            $stock->update(['stockactual' => $posterior, 'stockminimo' => $stockMinimo, 'stockmaximo' => $stockMaximo, 'estado' => 1]);
+        } else {
+            Stock::create(['idproducto' => $detalle->idproducto, 'idsucursal' => $idSucursal, 'stockactual' => $posterior, 'stockminimo' => $stockMinimo, 'stockmaximo' => $stockMaximo, 'estado' => 1]);
+        }
+
+        $idMovimiento = DB::table('movimientos')->insertGetId([
+            'idtipomovimiento' => $this->obtenerTipoMovimiento('RECEPCION_COMPRA'),
+            'idusuario' => auth('web')->id(), 'idsucursalorigen' => null,
+            'idsucursaldestino' => $idSucursal, 'idcompra' => $idCompra,
+            'fecha' => now(), 'referencia' => null,
+            'observacion' => sprintf('%s Stock anterior: %d. Stock posterior: %d.', $observacion, $anterior, $posterior),
+            'estado' => 1, 'created_at' => now(),
+        ], 'idmovimiento');
+        DB::table('movimientos')->where('idmovimiento', $idMovimiento)->update(['referencia' => sprintf('REC-%06d', $idMovimiento)]);
+
+        $costo = $detalle->costounitario === null ? null : round((float) $detalle->costounitario, 2);
+        DB::table('detalle_movimiento')->insert([
+            'idmovimiento' => $idMovimiento, 'idproducto' => $detalle->idproducto,
+            'cantidad' => $cantidad, 'costounitario' => $costo,
+            'subtotal' => $costo === null ? null : round($costo * $cantidad, 2),
+        ]);
+    }
+
+    private function actualizarEstadoCompra(int $idCompra): void
+    {
+        $detalles = DB::table('detalle_compra')->where('idcompra', $idCompra)->lockForUpdate()->get(['cantidad', 'cantidadrecibida', 'cantidadproblema']);
+        $completa = $detalles->isNotEmpty() && $detalles->every(fn ($d) => (int) $d->cantidadrecibida >= (int) $d->cantidad && (int) $d->cantidadproblema === 0);
+        $huboRecepcion = $detalles->contains(fn ($d) => (int) $d->cantidadrecibida > 0 || (int) $d->cantidadproblema > 0);
+        DB::table('compras')->where('idcompra', $idCompra)->update([
+            'estado' => $completa ? 'RECIBIDA' : ($huboRecepcion ? 'PARCIAL' : 'PENDIENTE'),
+            'updated_at' => now(),
+        ]);
+    }
+
+    private function comprobarSucursalCompra(int $idSucursal): void
+    {
+        $usuario = auth('web')->user();
+        abort_unless($usuario, 403);
+        if ($usuario?->rol?->nombre === 'DUEÑO') return;
+        abort_unless((int) ($usuario->idsucursal ?? 0) === $idSucursal, 403);
+    }
+
+    private function agregarObservacionRecepcion(?string $existente, ?string $nueva): ?string
+    {
+        $nueva = trim((string) $nueva);
+        if ($nueva === '') return $existente;
+        $linea = sprintf('[%s] %s', now()->format('d/m/Y H:i'), $nueva);
+        $existente = trim((string) $existente);
+        return $existente === '' ? $linea : $existente . PHP_EOL . $linea;
     }
 
     /**

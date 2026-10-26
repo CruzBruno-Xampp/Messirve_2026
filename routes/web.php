@@ -4,8 +4,11 @@ use App\Http\Controllers\Auth\ClienteLoginController;
 use App\Http\Controllers\Auth\ClientePasswordResetController;
 use App\Http\Controllers\Auth\ClienteRegisterController;
 use App\Http\Controllers\Auth\AdminLoginController;
+use App\Http\Controllers\Auth\AdminPasswordResetController;
 use App\Http\Controllers\CatalogoImportController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\CompraController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ReporteController;
@@ -112,9 +115,35 @@ Route::prefix('admin')
             ->middleware('throttle:6,1')
             ->name('login.store');
 
+        // Solicitud de recuperación de contraseña del personal.
+        Route::get(
+            '/recuperar-contrasena',
+            [AdminPasswordResetController::class, 'create']
+        )->name('password.request');
+
+        Route::post(
+            '/recuperar-contrasena',
+            [AdminPasswordResetController::class, 'store']
+        )
+            ->middleware('throttle:3,1')
+            ->name('password.email');
+
+        // Formulario que recibe el token enviado por correo.
+        Route::get(
+            '/restablecer-contrasena/{token}',
+            [AdminPasswordResetController::class, 'edit']
+        )->name('password.reset');
+
+        Route::post(
+            '/restablecer-contrasena',
+            [AdminPasswordResetController::class, 'update']
+        )
+            ->middleware('throttle:10,1')
+            ->name('password.update');
+
         // Entrada principal del sector administrativo.
         Route::get('/', function () {
-            return redirect()->route('productos.index');
+            return redirect()->route('dashboard.index');
         })
             ->middleware(AuthenticateAdmin::class)
             ->name('inicio');
@@ -127,6 +156,23 @@ Route::prefix('admin')
             ->middleware(AuthenticateAdmin::class)
             ->name('logout');
     });
+
+/*
+|--------------------------------------------------------------------------
+| Dashboard administrativo
+|--------------------------------------------------------------------------
+|
+| Disponible para todo usuario interno autenticado. El controlador limita
+| automáticamente los datos a la sucursal asignada, salvo el dueño global.
+|
+*/
+
+Route::get(
+    '/dashboard',
+    [DashboardController::class, 'index']
+)
+    ->middleware(AuthenticateAdmin::class)
+    ->name('dashboard.index');
 
 /*
 |--------------------------------------------------------------------------
@@ -178,6 +224,22 @@ Route::middleware([
             ->whereNumber('stock')
             ->middleware(VerificarPermiso::class . ':stock.gestionar')
             ->name('transferencias.store');
+
+        Route::put(
+            '/compras/detalles/{detalleCompra}/recepcion',
+            [StockController::class, 'recibirCompra']
+        )
+            ->whereNumber('detalleCompra')
+            ->middleware([VerificarPermiso::class . ':compras.recibir', 'throttle:60,1'])
+            ->name('compras.recepcion');
+
+        Route::patch(
+            '/compras/detalles/{detalleCompra}/reemplazo',
+            [StockController::class, 'registrarReemplazo']
+        )
+            ->whereNumber('detalleCompra')
+            ->middleware([VerificarPermiso::class . ':compras.recibir', 'throttle:60,1'])
+            ->name('compras.reemplazo');
     });
 
 /*
@@ -199,6 +261,17 @@ Route::get(
         VerificarPermiso::class . ':ventas.ver',
     ])
     ->name('ventas.index');
+
+Route::put(
+    '/ventas/metodos-pago',
+    [VentaController::class, 'actualizarMetodosPago']
+)
+    ->middleware([
+        AuthenticateAdmin::class,
+        VerificarPermiso::class . ':ventas.ver',
+        'throttle:20,1',
+    ])
+    ->name('ventas.metodos-pago.actualizar');
 
 Route::get(
     '/ventas/{venta}',
@@ -383,6 +456,67 @@ Route::middleware(AuthenticateAdmin::class)
                 'throttle:60,1',
             ])
             ->name('update');
+    });
+
+
+/*
+|--------------------------------------------------------------------------
+| Compras a proveedores
+|--------------------------------------------------------------------------
+|
+| En esta primera etapa se habilita la consulta del historial de compras.
+| La creación, recepción y anulación se incorporan en los próximos pasos.
+|
+*/
+
+Route::middleware(AuthenticateAdmin::class)
+    ->prefix('compras')
+    ->name('compras.')
+    ->group(function () {
+        Route::get(
+            '/',
+            [CompraController::class, 'index']
+        )
+            ->middleware(VerificarPermiso::class . ':compras.ver')
+            ->name('index');
+
+        Route::get(
+            '/nueva',
+            [CompraController::class, 'crear']
+        )
+            ->middleware(VerificarPermiso::class . ':compras.crear')
+            ->name('crear');
+
+        Route::post(
+            '/',
+            [CompraController::class, 'guardar']
+        )
+            ->middleware([
+                VerificarPermiso::class . ':compras.crear',
+                'throttle:20,1',
+            ])
+            ->name('guardar');
+
+        Route::get(
+            '/articulos/buscar',
+            [CompraController::class, 'buscarArticulos']
+        )
+            ->middleware([
+                VerificarPermiso::class . ':compras.crear',
+                'throttle:120,1',
+            ])
+            ->name('articulos.buscar');
+
+        Route::get(
+            '/articulos/{detalle}/preparar-producto',
+            [CompraController::class, 'prepararProducto']
+        )
+            ->whereNumber('detalle')
+            ->middleware([
+                VerificarPermiso::class . ':compras.crear',
+                'throttle:120,1',
+            ])
+            ->name('articulos.preparar-producto');
     });
 
 /*

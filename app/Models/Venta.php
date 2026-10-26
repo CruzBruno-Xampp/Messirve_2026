@@ -25,6 +25,11 @@ class Venta extends Model
         'estado',
         'subtotal',
         'descuento',
+        'porcentajedescuentocliente',
+        'porcentajedescuentoadicional',
+        'idmetodopago',
+        'porcentajerecargo',
+        'importerecargo',
         'total',
         'facturada',
         'tipofactura',
@@ -36,6 +41,10 @@ class Venta extends Model
         'fecha' => 'datetime',
         'subtotal' => 'decimal:2',
         'descuento' => 'decimal:2',
+        'porcentajedescuentocliente' => 'decimal:2',
+        'porcentajedescuentoadicional' => 'decimal:2',
+        'porcentajerecargo' => 'decimal:2',
+        'importerecargo' => 'decimal:2',
         'total' => 'decimal:2',
         'facturada' => 'boolean',
         'facturada_at' => 'datetime',
@@ -74,6 +83,18 @@ class Venta extends Model
             Sucursal::class,
             'idsucursal',
             'idsucursal'
+        );
+    }
+
+    /**
+     * Medio de pago utilizado al confirmar la venta.
+     */
+    public function metodoPago(): BelongsTo
+    {
+        return $this->belongsTo(
+            MetodoPago::class,
+            'idmetodopago',
+            'idmetodopago'
         );
     }
 

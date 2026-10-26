@@ -34,9 +34,16 @@
         solicitudFiltros?.abort();
         solicitudFiltros = new AbortController();
 
-        const panelActual = document.getElementById('panel-resultados-stock');
-        panelActual?.classList.add('panel--cargando');
-        panelActual?.setAttribute('aria-busy', 'true');
+        const panelStockActual = document.getElementById('panel-resultados-stock');
+        const panelRecepcionActual = document.getElementById('panel-recepcion-compras');
+        const pestanaActiva = document
+            .querySelector('[data-pestana-recepcion].pestana-recepcion--activa')
+            ?.dataset.pestanaRecepcion || 'pendientes';
+
+        [panelStockActual, panelRecepcionActual].forEach((panel) => {
+            panel?.classList.add('panel--cargando');
+            panel?.setAttribute('aria-busy', 'true');
+        });
 
         try {
             const respuesta = await fetch(url, {
@@ -47,25 +54,34 @@
             });
 
             if (!respuesta.ok) {
-                throw new Error('No se pudo actualizar el listado.');
+                throw new Error('No se pudieron actualizar los resultados.');
             }
 
             const documento = new DOMParser().parseFromString(
                 await respuesta.text(),
                 'text/html'
             );
-            const panelNuevo = documento.getElementById('panel-resultados-stock');
+            const panelStockNuevo = documento.getElementById('panel-resultados-stock');
+            const panelRecepcionNuevo = documento.getElementById('panel-recepcion-compras');
 
-            if (!panelNuevo) {
-                throw new Error('La respuesta no contiene el listado de stock.');
+            if (!panelStockNuevo || !panelRecepcionNuevo) {
+                throw new Error('La respuesta no contiene todos los paneles de stock.');
             }
 
-            document.getElementById('panel-resultados-stock')?.replaceWith(panelNuevo);
+            document.getElementById('panel-resultados-stock')?.replaceWith(panelStockNuevo);
+            document.getElementById('panel-recepcion-compras')?.replaceWith(panelRecepcionNuevo);
+
+            // El panel se reemplaza por AJAX. Restauramos la pestaña que el usuario
+            // estaba consultando para que el filtro no lo devuelva siempre a Pendientes.
+            activarPestanaRecepcion(pestanaActiva);
+
             window.history.replaceState({}, '', url);
         } catch (error) {
             if (error.name !== 'AbortError') {
-                panelActual?.classList.remove('panel--cargando');
-                panelActual?.removeAttribute('aria-busy');
+                [panelStockActual, panelRecepcionActual].forEach((panel) => {
+                    panel?.classList.remove('panel--cargando');
+                    panel?.removeAttribute('aria-busy');
+                });
             }
         }
     }
@@ -106,6 +122,38 @@
     const minimoDestino = document.getElementById('stockminimo_destino');
     const maximoDestino = document.getElementById('stockmaximo_destino');
     const errorTransferencia = document.getElementById('error-transferencia-stock');
+
+    const modalRecepcionCompra = document.getElementById('modal-recepcion-compra');
+    const formularioRecepcionCompra = document.getElementById('formulario-recepcion-compra');
+    const recepcionProducto = document.getElementById('recepcion-producto');
+    const recepcionCodigo = document.getElementById('recepcion-codigo');
+    const recepcionCompra = document.getElementById('recepcion-compra');
+    const recepcionProveedor = document.getElementById('recepcion-proveedor');
+    const recepcionSucursal = document.getElementById('recepcion-sucursal');
+    const recepcionStock = document.getElementById('recepcion-stock');
+    const recepcionPedido = document.getElementById('recepcion-pedido');
+    const recepcionRecibido = document.getElementById('recepcion-recibido');
+    const recepcionProblemaPrevio = document.getElementById('recepcion-problema-previo');
+    const recepcionPendiente = document.getElementById('recepcion-pendiente');
+    const cantidadLlegada = document.getElementById('cantidad_llegada');
+    const cantidadBuena = document.getElementById('cantidad_buena');
+    const cantidadProblema = document.getElementById('cantidad_problema');
+    const bloqueObservacionRecepcion = document.getElementById('bloque-observacion-recepcion');
+    const observacionRecepcion = document.getElementById('observacion_recepcion');
+    const minimoRecepcion = document.getElementById('stockminimo_recepcion');
+    const maximoRecepcion = document.getElementById('stockmaximo_recepcion');
+    const errorRecepcionCompra = document.getElementById('error-recepcion-compra');
+
+    const modalReemplazo = document.getElementById('modal-reemplazo-compra');
+    const formularioReemplazo = document.getElementById('formulario-reemplazo-compra');
+    const reemplazoProducto = document.getElementById('reemplazo-producto');
+    const reemplazoCodigo = document.getElementById('reemplazo-codigo');
+    const reemplazoCompraProveedor = document.getElementById('reemplazo-compra-proveedor');
+    const reemplazoPendiente = document.getElementById('reemplazo-pendiente');
+    const reemplazoStock = document.getElementById('reemplazo-stock');
+    const cantidadReemplazo = document.getElementById('cantidad_reemplazo');
+    const observacionReemplazo = document.getElementById('observacion_reemplazo');
+    const errorReemplazo = document.getElementById('error-reemplazo-compra');
 
     let botonQueAbrioModal = null;
     let idProductoIngreso = null;
@@ -164,6 +212,8 @@
         const hayModalAbierto = Boolean(
             (modalIngreso && !modalIngreso.hidden)
             || (modalTransferencia && !modalTransferencia.hidden)
+            || (modalRecepcionCompra && !modalRecepcionCompra.hidden)
+            || (modalReemplazo && !modalReemplazo.hidden)
         );
 
         document.body.classList.toggle('modal-abierto', hayModalAbierto);
@@ -320,6 +370,105 @@
         }
     }
 
+    function activarPestanaRecepcion(nombre) {
+        document.querySelectorAll('[data-pestana-recepcion]').forEach((boton) => {
+            const activa = boton.dataset.pestanaRecepcion === nombre;
+            boton.classList.toggle('pestana-recepcion--activa', activa);
+            boton.setAttribute('aria-selected', activa ? 'true' : 'false');
+        });
+        document.querySelectorAll('[data-contenido-recepcion]').forEach((panel) => {
+            panel.hidden = panel.dataset.contenidoRecepcion !== nombre;
+        });
+    }
+
+    function cerrarRecepcionCompra() {
+        if (!modalRecepcionCompra) return;
+        modalRecepcionCompra.hidden = true;
+        actualizarBloqueoPagina();
+        botonQueAbrioModal?.focus();
+    }
+
+    function abrirRecepcionCompra(boton) {
+        if (!modalRecepcionCompra || !formularioRecepcionCompra) return;
+        botonQueAbrioModal = boton;
+        const pendiente = Number.parseInt(boton.dataset.pendiente || '0', 10);
+        formularioRecepcionCompra.action = boton.dataset.action || '';
+        recepcionProducto.textContent = boton.dataset.producto || 'Producto';
+        recepcionCodigo.textContent = boton.dataset.codigo || 'Sin código MES';
+        recepcionCompra.textContent = boton.dataset.compra || '—';
+        recepcionProveedor.textContent = boton.dataset.proveedor || '—';
+        recepcionSucursal.textContent = boton.dataset.sucursal || '—';
+        recepcionStock.textContent = Number(boton.dataset.stock || 0).toLocaleString('es-AR');
+        recepcionPedido.textContent = Number(boton.dataset.pedido || 0).toLocaleString('es-AR');
+        recepcionRecibido.textContent = Number(boton.dataset.recibido || 0).toLocaleString('es-AR');
+        recepcionProblemaPrevio.textContent = Number(boton.dataset.problema || 0).toLocaleString('es-AR');
+        recepcionPendiente.textContent = pendiente.toLocaleString('es-AR');
+        cantidadLlegada.max = String(pendiente);
+        cantidadBuena.max = String(pendiente);
+        cantidadProblema.max = String(pendiente);
+        cantidadLlegada.value = String(pendiente);
+        cantidadBuena.value = String(pendiente);
+        cantidadProblema.value = '0';
+        minimoRecepcion.value = boton.dataset.minimo || '0';
+        maximoRecepcion.value = boton.dataset.maximo || '';
+        observacionRecepcion.value = '';
+        bloqueObservacionRecepcion.hidden = true;
+        ocultarError(errorRecepcionCompra);
+        modalRecepcionCompra.hidden = false;
+        actualizarBloqueoPagina();
+        window.setTimeout(() => cantidadLlegada?.focus(), 0);
+    }
+
+    function cerrarReemplazo() {
+        if (!modalReemplazo) return;
+        modalReemplazo.hidden = true;
+        actualizarBloqueoPagina();
+        botonQueAbrioModal?.focus();
+    }
+
+    function abrirReemplazo(boton) {
+        if (!modalReemplazo || !formularioReemplazo) return;
+        botonQueAbrioModal = boton;
+        const pendiente = Number.parseInt(boton.dataset.problema || '0', 10);
+        formularioReemplazo.action = boton.dataset.action || '';
+        reemplazoProducto.textContent = boton.dataset.producto || 'Producto';
+        reemplazoCodigo.textContent = boton.dataset.codigo || 'Sin código MES';
+        reemplazoCompraProveedor.textContent = `${boton.dataset.compra || '—'} · ${boton.dataset.proveedor || 'Proveedor'}`;
+        reemplazoPendiente.textContent = pendiente.toLocaleString('es-AR');
+        reemplazoStock.textContent = Number(boton.dataset.stock || 0).toLocaleString('es-AR');
+        cantidadReemplazo.max = String(pendiente);
+        cantidadReemplazo.value = String(pendiente);
+        observacionReemplazo.value = '';
+        ocultarError(errorReemplazo);
+        modalReemplazo.hidden = false;
+        actualizarBloqueoPagina();
+        window.setTimeout(() => cantidadReemplazo?.focus(), 0);
+    }
+
+    function sincronizarCantidadesRecepcion(origen) {
+        const llegada = Number.parseInt(cantidadLlegada?.value || '0', 10);
+        let buenas = Number.parseInt(cantidadBuena?.value || '0', 10);
+        let problemas = Number.parseInt(cantidadProblema?.value || '0', 10);
+        if (origen === 'llegada') {
+            problemas = Math.min(problemas, Math.max(llegada, 0));
+            buenas = Math.max(llegada - problemas, 0);
+            cantidadProblema.value = String(problemas);
+            cantidadBuena.value = String(buenas);
+        } else if (origen === 'problema') {
+            problemas = Math.min(Math.max(problemas, 0), Math.max(llegada, 0));
+            cantidadProblema.value = String(problemas);
+            cantidadBuena.value = String(Math.max(llegada - problemas, 0));
+        } else if (origen === 'buena') {
+            buenas = Math.min(Math.max(buenas, 0), Math.max(llegada, 0));
+            cantidadBuena.value = String(buenas);
+            cantidadProblema.value = String(Math.max(llegada - buenas, 0));
+        }
+        const problemasFinal = Number.parseInt(cantidadProblema?.value || '0', 10);
+        bloqueObservacionRecepcion.hidden = problemasFinal <= 0;
+        if (problemasFinal <= 0) observacionRecepcion.value = '';
+        ocultarError(errorRecepcionCompra);
+    }
+
     function soloDigitos(campo, error) {
         campo?.addEventListener('input', () => {
             campo.value = campo.value.replace(/[^0-9]/g, '');
@@ -334,6 +483,12 @@
     [cantidadTransferencia, minimoDestino, maximoDestino].forEach((campo) => {
         soloDigitos(campo, errorTransferencia);
     });
+
+    [cantidadLlegada, cantidadBuena, cantidadProblema, minimoRecepcion, maximoRecepcion].forEach((campo) => soloDigitos(campo, errorRecepcionCompra));
+    [cantidadReemplazo].forEach((campo) => soloDigitos(campo, errorReemplazo));
+    cantidadLlegada?.addEventListener('input', () => sincronizarCantidadesRecepcion('llegada'));
+    cantidadBuena?.addEventListener('input', () => sincronizarCantidadesRecepcion('buena'));
+    cantidadProblema?.addEventListener('input', () => sincronizarCantidadesRecepcion('problema'));
 
     ingresoSucursal?.addEventListener('change', cambiarSucursalIngreso);
     transferenciaSucursal?.addEventListener('change', cambiarSucursalTransferencia);
@@ -393,19 +548,57 @@
         }
     });
 
+    formularioRecepcionCompra?.addEventListener('submit', (evento) => {
+        ocultarError(errorRecepcionCompra);
+        const llegada = Number.parseInt(cantidadLlegada?.value || '0', 10);
+        const buenas = Number.parseInt(cantidadBuena?.value || '0', 10);
+        const problemas = Number.parseInt(cantidadProblema?.value || '0', 10);
+        const maximo = Number.parseInt(cantidadLlegada?.max || '0', 10);
+        const minimoStock = Number.parseInt(minimoRecepcion?.value || '0', 10);
+        const maximoTexto = maximoRecepcion?.value ?? '';
+        let mensaje = ''; let campo = null;
+        if (llegada < 1 || llegada > maximo) { mensaje = `La cantidad que llegó debe estar entre 1 y ${maximo.toLocaleString('es-AR')}.`; campo = cantidadLlegada; }
+        else if ((buenas + problemas) !== llegada) { mensaje = 'Las unidades buenas y con problemas deben sumar la cantidad que llegó.'; campo = cantidadBuena; }
+        else if (problemas > 0 && observacionRecepcion?.value.trim() === '') { mensaje = 'Escribí una observación explicando el problema.'; campo = observacionRecepcion; }
+        else if (maximoTexto !== '' && Number.parseInt(maximoTexto, 10) < minimoStock) { mensaje = 'El stock máximo debe ser igual o mayor que el mínimo.'; campo = maximoRecepcion; }
+        if (mensaje) { evento.preventDefault(); mostrarError(errorRecepcionCompra, mensaje); campo?.focus(); }
+    });
+
+    formularioReemplazo?.addEventListener('submit', (evento) => {
+        ocultarError(errorReemplazo);
+        const cantidad = Number.parseInt(cantidadReemplazo?.value || '0', 10);
+        const maximo = Number.parseInt(cantidadReemplazo?.max || '0', 10);
+        if (cantidad < 1 || cantidad > maximo) {
+            evento.preventDefault();
+            mostrarError(errorReemplazo, `La cantidad reemplazada debe estar entre 1 y ${maximo.toLocaleString('es-AR')}.`);
+            cantidadReemplazo?.focus();
+        }
+    });
+
     document.addEventListener('click', (evento) => {
+        const pestanaRecepcion = evento.target.closest('[data-pestana-recepcion]');
         const botonIngreso = evento.target.closest('.js-abrir-ingreso');
         const botonTransferencia = evento.target.closest('.js-abrir-transferencia');
+        const botonRecepcionCompra = evento.target.closest('.js-abrir-recepcion-compra');
+        const botonReemplazo = evento.target.closest('.js-abrir-reemplazo');
+
+        if (pestanaRecepcion) {
+            activarPestanaRecepcion(
+                pestanaRecepcion.dataset.pestanaRecepcion || 'pendientes'
+            );
+            return;
+        }
 
         if (botonIngreso) {
             abrirIngreso(botonIngreso);
             return;
         }
 
-        if (botonTransferencia && !botonTransferencia.disabled) {
-            abrirTransferencia(botonTransferencia);
-            return;
-        }
+        if (botonTransferencia && !botonTransferencia.disabled) { abrirTransferencia(botonTransferencia); return; }
+        if (botonRecepcionCompra) { abrirRecepcionCompra(botonRecepcionCompra); return; }
+        if (botonReemplazo) { abrirReemplazo(botonReemplazo); return; }
+        if (evento.target.closest('.js-cerrar-recepcion-compra')) { cerrarRecepcionCompra(); return; }
+        if (evento.target.closest('.js-cerrar-reemplazo')) { cerrarReemplazo(); return; }
 
         if (evento.target.closest('.js-cerrar-ingreso')) {
             cerrarIngreso();
@@ -425,8 +618,8 @@
             cerrarIngreso();
         }
 
-        if (modalTransferencia && !modalTransferencia.hidden) {
-            cerrarTransferencia();
-        }
+        if (modalTransferencia && !modalTransferencia.hidden) cerrarTransferencia();
+        if (modalRecepcionCompra && !modalRecepcionCompra.hidden) cerrarRecepcionCompra();
+        if (modalReemplazo && !modalReemplazo.hidden) cerrarReemplazo();
     });
 })();

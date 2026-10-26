@@ -20,6 +20,19 @@
         <div class="rodillo">
           <img src="{{ asset('images/rodillologo.png') }}" alt="Rodillo">
         </div>
+
+        <div class="pintura-animada" aria-hidden="true">
+          <div class="pintura-animada__pista">
+            <span class="pintura-animada__trazo"></span>
+            <span class="pintura-animada__brillo"></span>
+
+            <div class="mini-rodillo">
+              <span class="mini-rodillo__carga"></span>
+              <span class="mini-rodillo__soporte"></span>
+              <span class="mini-rodillo__mango"></span>
+            </div>
+          </div>
+        </div>
       </div>
 
         <div class="bienvenida">
@@ -29,9 +42,32 @@
         </div>
 
       <div class="redes-sociales">
-        <div class="red"><img src="{{ asset('images/ig.png') }}" alt="Instagram"><p>Instagram</p></div>
-        <div class="red"><img src="{{ asset('images/feis.png') }}" alt="Facebook"><p>Facebook</p></div>
-        <div class="red"><img src="{{ asset('images/wapp.png') }}" alt="WhatsApp"><p>WhatsApp</p></div>
+        <a
+          class="red red--enlace"
+          href="https://www.instagram.com/pintureriamessirve/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Abrir Instagram de Mes.Sirve Pinturería"
+        >
+          <img src="{{ asset('images/ig.png') }}" alt="">
+          <p>Instagram</p>
+        </a>
+
+        <a
+          class="red red--enlace"
+          href="https://www.facebook.com/messirvepintu"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Abrir Facebook de Mes.Sirve Pinturería"
+        >
+          <img src="{{ asset('images/feis.png') }}" alt="">
+          <p>Facebook</p>
+        </a>
+
+        <div class="red red--inactiva" aria-label="WhatsApp próximamente">
+          <img src="{{ asset('images/wapp.png') }}" alt="WhatsApp">
+          <p>WhatsApp</p>
+        </div>
       </div>
     </div>
 
@@ -42,11 +78,9 @@
         <span></span><span></span><span></span>
         <span></span><span></span><span></span>
       </div>
-
-      <div class="pincel-fondo">
+<div class="pincel-fondo">
         <img src="{{ asset('images/pincellogo.png') }}" alt="Pincel decorativo">
       </div>
-
       <div class="login-box">
         <h2>Iniciar Sesión</h2>
         <div class="subrayado-titulo"></div>

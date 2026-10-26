@@ -6,10 +6,13 @@
     $puedeVerVentas = $usuarioAdmin?->tienePermiso('ventas.ver') ?? false;
     $puedeVerClientes = $usuarioAdmin?->tienePermiso('clientes.ver') ?? false;
     $puedeVerProveedores = $usuarioAdmin?->tienePermiso('proveedores.ver') ?? false;
+    $puedeVerCompras = $usuarioAdmin?->tienePermiso('compras.ver') ?? false;
     $puedeVerReportes = $usuarioAdmin?->tienePermiso('reportes.ver') ?? false;
     $puedeGestionarUsuarios = $usuarioAdmin?->tienePermiso('usuarios.gestionar') ?? false;
     $puedeGestionarRoles = $usuarioAdmin?->tienePermiso('roles.gestionar') ?? false;
     $mostrarModuloProductos = $puedeVerProductos || $puedeVerCatalogo;
+
+    $moduloDashboardActivo = request()->routeIs('dashboard.*');
 
     $moduloProductosActivo = request()->routeIs('productos.*')
         || request()->routeIs('catalogos.importar*');
@@ -20,6 +23,7 @@
     $moduloVentasActivo = request()->routeIs('ventas.*');
     $moduloClientesActivo = request()->routeIs('clientes.*');
     $moduloProveedoresActivo = request()->routeIs('proveedores.*');
+    $moduloComprasActivo = request()->routeIs('compras.*');
     $moduloReportesActivo = request()->routeIs('reportes.*');
 @endphp
 
@@ -30,7 +34,7 @@
 >
     <div class="barra-lateral__cabecera">
         <a
-            href="{{ route('productos.index') }}"
+            href="{{ route('dashboard.index') }}"
             class="barra-lateral__marca"
             aria-label="Messirve, administración"
         >
@@ -67,10 +71,10 @@
     >
         <span class="barra-lateral__titulo">Menú</span>
 
-        <span
-            class="barra-lateral__item barra-lateral__item--deshabilitado"
-            aria-disabled="true"
-            title="Módulo pendiente"
+        <a
+            href="{{ route('dashboard.index') }}"
+            class="barra-lateral__item{{ $moduloDashboardActivo ? ' barra-lateral__item--activo' : '' }}"
+            @if ($moduloDashboardActivo) aria-current="page" @endif
         >
             <span class="barra-lateral__icono" aria-hidden="true">
                 <svg viewBox="0 0 24 24" focusable="false">
@@ -78,7 +82,7 @@
                 </svg>
             </span>
             <span class="barra-lateral__texto">Dashboard</span>
-        </span>
+        </a>
 
         @if ($mostrarModuloProductos)
         <div class="barra-lateral__grupo barra-lateral__grupo--productos">
@@ -219,6 +223,22 @@
             </a>
         @endif
 
+
+        @if ($puedeVerCompras)
+            <a
+                href="{{ route('compras.index') }}"
+                class="barra-lateral__item{{ $moduloComprasActivo ? ' barra-lateral__item--activo' : '' }}"
+                @if ($moduloComprasActivo) aria-current="page" @endif
+            >
+                <span class="barra-lateral__icono" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false">
+                        <path d="M4 3h16v18H4V3Zm3 3v2h10V6H7Zm0 5v2h4v-2H7Zm6 0v2h4v-2h-4Zm-6 5v2h4v-2H7Zm6 0v2h4v-2h-4Z"/>
+                    </svg>
+                </span>
+                <span class="barra-lateral__texto">Compras</span>
+            </a>
+        @endif
+
         @if ($puedeVerReportes)
             <a
                 href="{{ route('reportes.index') }}"
@@ -272,6 +292,38 @@
         <span>Panel administrativo</span>
     </div>
 </aside>
+
+@if ($usuarioAdmin)
+    <div
+        class="barra-sesion-admin"
+        aria-label="Sesión administrativa"
+    >
+        <div class="barra-sesion-admin__usuario">
+            <span>Bienvenido,</span>
+            <strong>{{ $usuarioAdmin->nombre ?: 'Usuario' }}</strong>
+        </div>
+
+        <form
+            action="{{ route('admin.logout') }}"
+            method="POST"
+            class="barra-sesion-admin__formulario"
+        >
+            @csrf
+
+            <button
+                type="submit"
+                class="barra-sesion-admin__boton"
+                title="Cerrar sesión e ingresar con otro usuario"
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h5v-2H5V5h5V3Zm7.6 4.4-1.4 1.4 2.2 2.2H9v2h9.4l-2.2 2.2 1.4 1.4L22 12l-4.4-4.6Z"/>
+                </svg>
+
+                <span>Cerrar sesión</span>
+            </button>
+        </form>
+    </div>
+@endif
 
 <div
     id="fondo-menu-administrativo"

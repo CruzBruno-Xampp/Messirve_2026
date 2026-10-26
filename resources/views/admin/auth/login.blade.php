@@ -31,23 +31,36 @@
             </div>
 
             <div class="panel-marca__contenido">
-                <p class="etiqueta">Sistema interno</p>
+                <p class="etiqueta">Panel administrativo</p>
 
-                <h1>Administrá la pinturería desde un solo lugar.</h1>
+                <h1>Todo el negocio, en un solo lugar.</h1>
 
                 <p>
-                    Acceso exclusivo para el dueño, gerentes
-                    y empleados autorizados.
+                    Acceso interno para administrar productos, stock,
+                    compras y ventas de la pinturería.
                 </p>
 
-                <ul>
-                    <li>Catálogos y productos</li>
-                    <li>Stock y proveedores</li>
-                    <li>Ventas, compras y reportes</li>
-                </ul>
+                <div class="escena-pintura" aria-hidden="true">
+                    <div class="escena-pintura__pared">
+                        <span class="escena-pintura__trazo escena-pintura__trazo--1"></span>
+                        <span class="escena-pintura__trazo escena-pintura__trazo--2"></span>
+                        <span class="escena-pintura__trazo escena-pintura__trazo--3"></span>
+
+                        <div class="rodillo-pintura">
+                            <span class="rodillo-pintura__carga"></span>
+                            <span class="rodillo-pintura__brazo"></span>
+                            <span class="rodillo-pintura__mango"></span>
+                        </div>
+                    </div>
+
+                    <div class="escena-pintura__leyenda">
+                        <span class="escena-pintura__punto"></span>
+                        Gestión interna Messirve
+                    </div>
+                </div>
             </div>
 
-            <small>MESSIRVE · Panel administrativo</small>
+            <small>MESSIRVE · Sistema interno</small>
         </section>
 
         <section class="panel-formulario">
@@ -132,17 +145,26 @@
                         </div>
                     </div>
 
-                    <label class="recordar" for="recordar">
-                        <input
-                            type="checkbox"
-                            id="recordar"
-                            name="recordar"
-                            value="1"
-                            @checked(old('recordar'))
-                        >
+                    <div class="opciones-acceso">
+                        <label class="recordar" for="recordar">
+                            <input
+                                type="checkbox"
+                                id="recordar"
+                                name="recordar"
+                                value="1"
+                                @checked(old('recordar'))
+                            >
 
-                        <span>Mantener la sesión iniciada</span>
-                    </label>
+                            <span>Mantener la sesión iniciada</span>
+                        </label>
+
+                        <a
+                            href="{{ route('admin.password.request') }}"
+                            class="enlace-recuperar"
+                        >
+                            ¿Olvidaste tu contraseña?
+                        </a>
+                    </div>
 
                     <button type="submit" class="boton-ingresar">
                         Ingresar al sistema

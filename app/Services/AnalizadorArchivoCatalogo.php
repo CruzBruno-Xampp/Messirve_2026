@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use DateTimeInterface;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -66,6 +67,8 @@ class AnalizadorArchivoCatalogo
         'codigo_barra' => [
             'codigo de barra',
             'cod de barra',
+            'codigo de barras',
+            'cod de barras',
             'codigo barra',
             'cod barra',
             'ean',
@@ -502,6 +505,23 @@ class AnalizadorArchivoCatalogo
         }
 
         /*
+         * Algunos proveedores nombran su código con la marca o empresa,
+         * por ejemplo "cód Tersuave" o "cód Sinteplast". Si el encabezado
+         * comienza con "cod"/"codigo" y no corresponde a barras o fabricante,
+         * se lo puede considerar un código del proveedor.
+         */
+        if (
+            in_array($sinonimoNormalizado, ['codigo proveedor', 'cod proveedor'], true)
+            && preg_match('/^(?:codigo|cod)\s+/', $encabezado) === 1
+            && !preg_match(
+                '/\b(?:barra|barras|ean|gtin|fabricante|fabrica)\b/',
+                $encabezado
+            )
+        ) {
+            return 350;
+        }
+
+        /*
          * Busca el sinónimo como palabra o conjunto de palabras
          * dentro del encabezado.
          *
@@ -557,16 +577,14 @@ class AnalizadorArchivoCatalogo
         // Convierte el símbolo % en una palabra comparable.
         $texto = str_replace('%', ' porcentaje ', $texto);
 
-        // Elimina tildes y caracteres especiales.
-        $textoSinTildes = iconv(
-            'UTF-8',
-            'ASCII//TRANSLIT//IGNORE',
-            $texto
-        );
-
-        if ($textoSinTildes !== false) {
-            $texto = $textoSinTildes;
-        }
+        /*
+         * Elimina tildes de forma consistente también en Windows/Laragon.
+         *
+         * Con iconv(), encabezados como "cód Tersuave", "Descripción"
+         * o "cód de barra" podían terminar normalizados de forma distinta
+         * según el entorno. Str::ascii() evita esa diferencia.
+         */
+        $texto = Str::ascii($texto);
 
         // Reemplaza puntos, guiones y símbolos por espacios.
         $texto = preg_replace(

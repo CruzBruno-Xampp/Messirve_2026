@@ -927,3 +927,295 @@ select {
         flex-direction: column;
     }
 }
+
+
+/* =========================================================
+   Paso 6.1 — Recepciones de compras pendientes
+   ========================================================= */
+
+.panel--recepciones { min-width: 0; }
+
+.aviso-recepcion-stock {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #ead99b;
+    background: #fffaf0;
+    color: #6d5c27;
+}
+
+.aviso-recepcion-stock__icono {
+    display: grid;
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--amarillo);
+    color: var(--azul-oscuro);
+    font-size: 0.75rem;
+    font-weight: 900;
+}
+
+.aviso-recepcion-stock p {
+    margin: 2px 0 0;
+    font-size: 0.72rem;
+    line-height: 1.5;
+}
+
+.aviso-recepcion-stock strong { color: var(--azul-oscuro); }
+
+.tabla-recepciones-stock {
+    width: 100%;
+    min-width: 1460px;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.74rem;
+}
+
+.tabla-recepciones-stock th,
+.tabla-recepciones-stock td {
+    padding: 12px 13px;
+    border-right: 1px solid var(--borde);
+    border-bottom: 1px solid var(--borde);
+    text-align: left;
+    vertical-align: middle;
+}
+
+.tabla-recepciones-stock th:last-child,
+.tabla-recepciones-stock td:last-child { border-right: 0; }
+
+.tabla-recepciones-stock thead th {
+    background: var(--azul-oscuro);
+    color: var(--blanco);
+    font-size: 0.68rem;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.tabla-recepciones-stock tbody tr:last-child td { border-bottom: 0; }
+.tabla-recepciones-stock tbody tr:hover td { background: #f8fbff; }
+
+.tabla-recepciones-stock th:nth-child(1) { min-width: 145px; }
+.tabla-recepciones-stock th:nth-child(2) { min-width: 310px; }
+.tabla-recepciones-stock th:nth-child(3) { min-width: 180px; }
+.tabla-recepciones-stock th:nth-child(4) { min-width: 175px; }
+.tabla-recepciones-stock th:nth-child(5),
+.tabla-recepciones-stock th:nth-child(6),
+.tabla-recepciones-stock th:nth-child(7),
+.tabla-recepciones-stock th:nth-child(8) {
+    min-width: 105px;
+    text-align: center;
+}
+.tabla-recepciones-stock th:nth-child(9) { min-width: 115px; }
+.tabla-recepciones-stock th:last-child { min-width: 180px; }
+
+.codigo--compra {
+    display: inline-block;
+    margin-bottom: 5px;
+    padding: 5px 7px;
+    border-radius: 6px;
+    background: var(--azul-suave);
+    color: var(--azul-oscuro);
+    font-weight: 900;
+}
+
+.cantidad--pedido { color: var(--azul-oscuro); font-weight: 900; }
+.cantidad--recibido { color: #137a4b; font-weight: 900; }
+.cantidad--pendiente { color: #9a6400; font-size: 0.9rem; font-weight: 900; }
+
+.insignia--pendiente-compra {
+    background: #fff3c7;
+    color: #725c00;
+}
+
+.boton-recepcion-proxima {
+    min-height: 36px;
+    padding: 0 12px;
+    border: 1px solid #b8d5ef;
+    border-radius: 8px;
+    background: #eaf4ff;
+    color: #5d7898;
+    cursor: not-allowed;
+    font: inherit;
+    font-size: 0.69rem;
+    font-weight: 900;
+    opacity: 0.8;
+}
+
+.accion-proxima-ayuda {
+    display: block;
+    margin-top: 5px;
+    color: var(--texto-secundario);
+    font-size: 0.62rem;
+}
+
+.estado-vacio--recepciones { min-height: 160px; }
+
+/* =========================================================
+   Paso 6.2 — Recepciones + incidencias simples
+   ========================================================= */
+
+.pestanas-recepcion {
+    display: inline-flex;
+    gap: 4px;
+    margin: 16px 20px 0;
+    padding: 4px;
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    background: #f7f9fc;
+}
+
+.pestana-recepcion {
+    display: inline-flex;
+    min-height: 38px;
+    align-items: center;
+    gap: 8px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: #5f6d82;
+    cursor: pointer;
+    font-size: 0.72rem;
+    font-weight: 900;
+}
+
+.pestana-recepcion span {
+    display: inline-grid;
+    min-width: 23px;
+    height: 23px;
+    place-items: center;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #e8eef6;
+    color: var(--azul-oscuro);
+    font-size: 0.64rem;
+}
+
+.pestana-recepcion--activa {
+    background: var(--azul-medio);
+    color: #fff;
+}
+
+.pestana-recepcion--activa span {
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+}
+
+.contenido-pestana-recepcion[hidden] { display: none !important; }
+.contenido-pestana-recepcion { margin-top: 14px; border-top: 1px solid var(--borde); }
+
+.aviso-recepcion-stock--problemas {
+    border-color: #efc0bc;
+    background: #fff5f4;
+    color: #8e3129;
+}
+
+.aviso-recepcion-stock--problemas .aviso-recepcion-stock__icono {
+    background: #f9d7d3;
+    color: var(--error);
+}
+
+.cantidad--problema { color: var(--error); font-weight: 900; }
+.insignia--incidencia { background: #fff0ef; color: var(--error); }
+
+.observacion-incidencia {
+    max-width: 390px;
+    max-height: 88px;
+    overflow-y: auto;
+    color: #5b6576;
+    font-size: 0.68rem;
+    line-height: 1.45;
+    white-space: pre-line;
+}
+
+.tabla-recepciones-stock--problemas { min-width: 1260px; }
+.modal__contenido--recepcion { width: min(690px, 100%); }
+
+.resumen-recepcion-modal {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin: 16px 0 18px;
+}
+
+.resumen-recepcion-modal > div,
+.resumen-reemplazo > div {
+    min-width: 0;
+    padding: 10px 11px;
+    border: 1px solid var(--borde);
+    border-radius: 9px;
+    background: #f9fbfe;
+}
+
+.resumen-recepcion-modal span,
+.resumen-recepcion-modal strong,
+.resumen-reemplazo span,
+.resumen-reemplazo strong { display: block; }
+
+.resumen-recepcion-modal span,
+.resumen-reemplazo span {
+    margin-bottom: 4px;
+    color: var(--texto-secundario);
+    font-size: 0.61rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.resumen-recepcion-modal strong,
+.resumen-reemplazo strong {
+    overflow-wrap: anywhere;
+    color: var(--azul-oscuro);
+    font-size: 0.75rem;
+}
+
+.resumen-recepcion-modal__destacado {
+    border-color: #ead174 !important;
+    background: #fff8dc !important;
+}
+
+.campo-modal textarea {
+    width: 100%;
+    min-height: 90px;
+    padding: 11px 13px;
+    border: 1px solid #cdd7e4;
+    border-radius: 9px;
+    outline: none;
+    resize: vertical;
+    background: var(--blanco);
+    color: var(--texto);
+    font: inherit;
+    font-size: 0.8rem;
+    line-height: 1.45;
+}
+
+.campo-modal textarea:focus {
+    border-color: var(--azul-principal);
+    box-shadow: 0 0 0 4px rgba(65, 152, 232, 0.14);
+}
+
+.campo-modal--observacion-problema[hidden] { display: none !important; }
+
+.resumen-reemplazo {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr 1fr;
+    gap: 8px;
+    margin: 16px 0 18px;
+}
+
+@media (max-width: 760px) {
+    .pestanas-recepcion {
+        display: grid;
+        margin-right: 14px;
+        margin-left: 14px;
+    }
+    .pestana-recepcion { justify-content: space-between; }
+    .resumen-recepcion-modal { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .resumen-reemplazo { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 520px) {
+    .resumen-recepcion-modal { grid-template-columns: 1fr; }
+}

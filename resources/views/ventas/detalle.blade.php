@@ -27,6 +27,56 @@
         $fechaVentaLocal = $venta->fecha
             ? $venta->fecha->copy()->setTimezone($zonaHoraria)
             : null;
+
+        $porcentajeDescuentoCliente = (float) ($venta->porcentajedescuentocliente ?? 0);
+        $porcentajeDescuentoAdicional = (float) ($venta->porcentajedescuentoadicional ?? 0);
+        $ventaConDescuentoLegacy = $porcentajeDescuentoCliente <= 0
+            && $porcentajeDescuentoAdicional <= 0
+            && (float) $venta->descuento > 0;
+
+        $importeDescuentoClienteVenta = 0.0;
+        $importeDescuentoAdicionalVenta = 0.0;
+
+        foreach ($venta->detalles as $detalleResumen) {
+            $subtotalResumen = (float) $detalleResumen->subtotal;
+
+            if ($ventaConDescuentoLegacy) {
+                $importeDescuentoClienteVenta += (float) $detalleResumen->descuento;
+                continue;
+            }
+
+            $descuentoClienteResumen = round(
+                $subtotalResumen * ($porcentajeDescuentoCliente / 100),
+                2
+            );
+            $baseAdicionalResumen = round(
+                $subtotalResumen - $descuentoClienteResumen,
+                2
+            );
+            $descuentoAdicionalResumen = round(
+                $baseAdicionalResumen * ($porcentajeDescuentoAdicional / 100),
+                2
+            );
+
+            $importeDescuentoClienteVenta += $descuentoClienteResumen;
+            $importeDescuentoAdicionalVenta += $descuentoAdicionalResumen;
+        }
+
+        $importeDescuentoClienteVenta = round($importeDescuentoClienteVenta, 2);
+        $importeDescuentoAdicionalVenta = round($importeDescuentoAdicionalVenta, 2);
+
+        $porcentajeDescuentoClienteMostrar = $ventaConDescuentoLegacy
+            && (float) $venta->subtotal > 0
+                ? round(((float) $venta->descuento / (float) $venta->subtotal) * 100, 2)
+                : $porcentajeDescuentoCliente;
+        $porcentajeDescuentoAdicionalMostrar = $ventaConDescuentoLegacy
+            ? 0.0
+            : $porcentajeDescuentoAdicional;
+
+        $porcentajeRecargo = (float) ($venta->porcentajerecargo ?? 0);
+        $importeRecargo = (float) ($venta->importerecargo ?? 0);
+        $baseDespuesDescuentos = round((float) $venta->total - $importeRecargo, 2);
+        $nombreMetodoPago = $venta->metodoPago?->nombre ?? 'No registrado';
     @endphp
 
     <title>Detalle {{ $numeroVenta }} | Messirve</title>
@@ -117,6 +167,16 @@
                     </span>
                 </strong>
             </article>
+
+            <article class="dato-venta">
+                <span>Medio de pago</span>
+                <strong>{{ $nombreMetodoPago }}</strong>
+                @if ($venta->idmetodopago)
+                    <small>Recargo aplicado: {{ rtrim(rtrim(number_format($porcentajeRecargo, 2, ',', '.'), '0'), ',') }}%</small>
+                @else
+                    <small>Venta anterior a la registración de medios de pago.</small>
+                @endif
+            </article>
         </section>
 
         @if ($movimientoAnulacion)
@@ -194,7 +254,8 @@
                                 <th>Código</th>
                                 <th>Descripción</th>
                                 <th>PVP</th>
-                                <th>Descuento</th>
+                                <th>Desc. cliente</th>
+                                <th>Desc. adicional</th>
                                 <th>Cantidad</th>
                                 <th>IVA incluido</th>
                                 <th>Total línea</th>
@@ -217,24 +278,58 @@
                                     <td class="importe importe--pvp">
                                         $ {{ number_format((float) $detalle->preciounitario, 2, ',', '.') }}
                                     </td>
-                                    <td class="descuento-detalle">
-                                        @php
-                                            $subtotalLineaOriginal = (float) $detalle->subtotal;
-                                            $importeDescuentoLinea = (float) $detalle->descuento;
-                                            $porcentajeDescuentoLinea = $subtotalLineaOriginal > 0
-                                                ? ($importeDescuentoLinea / $subtotalLineaOriginal) * 100
+                                    @php
+                                        $subtotalLineaOriginal = (float) $detalle->subtotal;
+
+                                        if ($ventaConDescuentoLegacy) {
+                                            $importeDescuentoClienteLinea = (float) $detalle->descuento;
+                                            $porcentajeClienteLinea = $subtotalLineaOriginal > 0
+                                                ? ($importeDescuentoClienteLinea / $subtotalLineaOriginal) * 100
                                                 : 0;
-                                            $porcentajeDescuentoTexto = rtrim(
-                                                rtrim(number_format($porcentajeDescuentoLinea, 2, ',', '.'), '0'),
-                                                ','
+                                            $importeDescuentoAdicionalLinea = 0.0;
+                                            $porcentajeAdicionalLinea = 0.0;
+                                        } else {
+                                            $porcentajeClienteLinea = $porcentajeDescuentoCliente;
+                                            $importeDescuentoClienteLinea = round(
+                                                $subtotalLineaOriginal * ($porcentajeClienteLinea / 100),
+                                                2
                                             );
-                                        @endphp
+                                            $baseAdicionalLinea = round(
+                                                $subtotalLineaOriginal - $importeDescuentoClienteLinea,
+                                                2
+                                            );
+                                            $porcentajeAdicionalLinea = $porcentajeDescuentoAdicional;
+                                            $importeDescuentoAdicionalLinea = round(
+                                                $baseAdicionalLinea * ($porcentajeAdicionalLinea / 100),
+                                                2
+                                            );
+                                        }
+
+                                        $porcentajeClienteTexto = rtrim(
+                                            rtrim(number_format($porcentajeClienteLinea, 2, ',', '.'), '0'),
+                                            ','
+                                        );
+                                        $porcentajeAdicionalTexto = rtrim(
+                                            rtrim(number_format($porcentajeAdicionalLinea, 2, ',', '.'), '0'),
+                                            ','
+                                        );
+                                    @endphp
+                                    <td class="descuento-detalle">
                                         <span class="descuento-detalle__porcentaje">
-                                            {{ $porcentajeDescuentoTexto }}%
+                                            {{ $porcentajeClienteTexto }}%
                                         </span>
                                         <span class="descuento-detalle__separador">/</span>
                                         <span class="descuento-detalle__importe">
-                                            $ {{ number_format($importeDescuentoLinea, 2, ',', '.') }}
+                                            $ {{ number_format($importeDescuentoClienteLinea, 2, ',', '.') }}
+                                        </span>
+                                    </td>
+                                    <td class="descuento-detalle descuento-detalle--adicional">
+                                        <span class="descuento-detalle__porcentaje">
+                                            {{ $porcentajeAdicionalTexto }}%
+                                        </span>
+                                        <span class="descuento-detalle__separador">/</span>
+                                        <span class="descuento-detalle__importe">
+                                            $ {{ number_format($importeDescuentoAdicionalLinea, 2, ',', '.') }}
                                         </span>
                                     </td>
                                     <td class="cantidad-detalle">
@@ -259,11 +354,23 @@
                     <strong>$ {{ number_format((float) $venta->subtotal, 2, ',', '.') }}</strong>
                 </div>
                 <div>
-                    <span>Descuento</span>
-                    <strong>$ {{ number_format((float) $venta->descuento, 2, ',', '.') }}</strong>
+                    <span>Desc. cliente ({{ rtrim(rtrim(number_format($porcentajeDescuentoClienteMostrar, 2, ',', '.'), '0'), ',') }}%)</span>
+                    <strong>$ {{ number_format($importeDescuentoClienteVenta, 2, ',', '.') }}</strong>
+                </div>
+                <div>
+                    <span>Desc. adicional ({{ rtrim(rtrim(number_format($porcentajeDescuentoAdicionalMostrar, 2, ',', '.'), '0'), ',') }}%)</span>
+                    <strong>$ {{ number_format($importeDescuentoAdicionalVenta, 2, ',', '.') }}</strong>
+                </div>
+                <div>
+                    <span>Después de descuentos</span>
+                    <strong>$ {{ number_format($baseDespuesDescuentos, 2, ',', '.') }}</strong>
+                </div>
+                <div class="totales-detalle__recargo">
+                    <span>Recargo ({{ rtrim(rtrim(number_format($porcentajeRecargo, 2, ',', '.'), '0'), ',') }}%)</span>
+                    <strong>$ {{ number_format($importeRecargo, 2, ',', '.') }}</strong>
                 </div>
                 <div class="totales-detalle__total">
-                    <span>Total</span>
+                    <span>Total cobrado</span>
                     <strong>$ {{ number_format((float) $venta->total, 2, ',', '.') }}</strong>
                 </div>
             </footer>

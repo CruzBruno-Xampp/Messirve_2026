@@ -851,6 +851,11 @@ select {
     color: var(--exito);
 }
 
+.historial-lista__estado--programada {
+    background: var(--azul-suave);
+    color: var(--azul-medio);
+}
+
 .historial-lista strong {
     overflow: hidden;
     color: var(--azul-oscuro);
@@ -890,6 +895,11 @@ select {
     color: var(--exito);
 }
 
+.etiqueta-lista--programada {
+    background: var(--azul-suave);
+    color: var(--azul-medio);
+}
+
 .producto-vinculado {
     display: flex;
     max-width: 260px;
@@ -913,7 +923,8 @@ select {
 
 .producto-pendiente,
 .accion-resuelta,
-.accion-historica {
+.accion-historica,
+.accion-programada {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -937,6 +948,11 @@ select {
 .accion-historica {
     background: #f0f2f5;
     color: var(--texto-secundario);
+}
+
+.accion-programada {
+    background: var(--azul-suave);
+    color: var(--azul-medio);
 }
 
 @media (max-width: 1180px) {

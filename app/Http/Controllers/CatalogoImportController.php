@@ -785,29 +785,13 @@ $catalogo->detalles()->update([
 ]);
 
 /*
- * Desactiva todas las versiones del proveedor.
+ * Recalcula la vigencia real del proveedor usando la fecha de hoy.
+ *
+ * Una lista futura queda programada y no reemplaza a la vigente
+ * hasta que llegue su fecha. Cuando ese día llegue, la próxima
+ * consulta del sistema la dejará vigente automáticamente.
  */
-CatalogoProveedor::query()
-    ->where('idproveedor', $idProveedor)
-    ->update([
-        'estado' => 0,
-    ]);
-
-/*
- * Selecciona como vigente la lista con la fecha más nueva.
- * Una lista antigua importada posteriormente no reemplazará
- * a otra que tenga una fecha de vigencia mayor.
- */
-$catalogoVigente = CatalogoProveedor::query()
-    ->where('idproveedor', $idProveedor)
-    ->orderByRaw('fecha_vigencia IS NULL ASC')
-    ->orderByDesc('fecha_vigencia')
-    ->orderByDesc('idcatalogoproveedor')
-    ->firstOrFail();
-
-$catalogoVigente->update([
-    'estado' => 1,
-]);
+CatalogoProveedor::sincronizarVigencias($idProveedor);
                 foreach ($configuraciones as $configuracion) {
                     /*
                      * Primero transforma la hoja seleccionada

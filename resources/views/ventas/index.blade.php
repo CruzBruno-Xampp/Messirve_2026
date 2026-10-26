@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{{ asset('css/ventas/index.css') }}">
     <link rel="stylesheet" href="{{ asset('css/ventas/detalle.css') }}">
     <link rel="stylesheet" href="{{ asset('css/admin/barra-lateral.css') }}">
+    <script src="{{ asset('js/ventas/index.js') }}" defer></script>
 </head>
 
 <body class="con-barra-lateral">
@@ -30,11 +31,19 @@
                 </p>
             </div>
 
-            @if ($puedeCrearVentas)
-                <a href="{{ route('ventas.crear') }}" class="boton boton--primario">
-                    + Nueva venta
-                </a>
-            @endif
+            <div class="encabezado-principal__acciones">
+                @if ($esDueno)
+                    <button type="button" class="boton boton--secundario" id="abrir-metodos-pago">
+                        Configurar medios de pago
+                    </button>
+                @endif
+
+                @if ($puedeCrearVentas)
+                    <a href="{{ route('ventas.crear') }}" class="boton boton--primario">
+                        + Nueva venta
+                    </a>
+                @endif
+            </div>
         </header>
 
         @if ($mensajeExito)
@@ -48,6 +57,13 @@
             <section class="alerta alerta--error" role="alert">
                 <strong>No se pudo continuar.</strong>
                 <span>{{ session('error') }}</span>
+            </section>
+        @endif
+
+        @if ($errors->any())
+            <section class="alerta alerta--error" role="alert">
+                <strong>No se pudieron guardar los medios de pago.</strong>
+                <span>{{ $errors->first() }}</span>
             </section>
         @endif
 
@@ -234,5 +250,47 @@
             @endif
         </section>
     </main>
+
+    @if ($esDueno)
+        <div class="modal-metodos-pago" id="modal-metodos-pago" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-metodos-pago" aria-hidden="true" data-open-on-error="{{ $errors->any() ? '1' : '0' }}">
+            <div class="modal-metodos-pago__fondo" data-cerrar-metodos-pago></div>
+            <section class="modal-metodos-pago__contenido" tabindex="-1">
+                <header class="modal-metodos-pago__cabecera">
+                    <div>
+                        <p>Configuración de cobros</p>
+                        <h2 id="titulo-modal-metodos-pago">Medios de pago</h2>
+                        <span>El porcentaje guardado se aplicará solamente a las ventas nuevas. Las ventas anteriores conservan su recargo histórico.</span>
+                    </div>
+                    <button type="button" class="modal-metodos-pago__cerrar" data-cerrar-metodos-pago aria-label="Cerrar">×</button>
+                </header>
+                <form action="{{ route('ventas.metodos-pago.actualizar') }}" method="POST" id="formulario-metodos-pago">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-metodos-pago__cuerpo">
+                        @forelse ($metodosPago as $indice => $metodoPago)
+                            <div class="metodo-pago-config">
+                                <div><strong>{{ $metodoPago->nombre }}</strong><span>{{ $metodoPago->estado ? 'Activo' : 'Inactivo' }}</span></div>
+                                <input type="hidden" name="metodos[{{ $indice }}][idmetodopago]" value="{{ $metodoPago->idmetodopago }}">
+                                <label>
+                                    <span>Recargo</span>
+                                    <span class="metodo-pago-config__control">
+                                        <input type="number" name="metodos[{{ $indice }}][recargo]" min="0" max="100" step="0.01" inputmode="decimal" required value="{{ old("metodos.$indice.recargo", number_format((float) $metodoPago->recargo, 2, '.', '')) }}">
+                                        <b>%</b>
+                                    </span>
+                                </label>
+                            </div>
+                        @empty
+                            <p class="modal-metodos-pago__vacio">No hay medios de pago registrados.</p>
+                        @endforelse
+                    </div>
+                    <footer class="modal-metodos-pago__pie">
+                        <button type="button" class="boton boton--secundario" data-cerrar-metodos-pago>Cancelar</button>
+                        <button type="submit" class="boton boton--primario" @disabled($metodosPago->isEmpty())>Guardar cambios</button>
+                    </footer>
+                </form>
+            </section>
+        </div>
+    @endif
+
 </body>
 </html>

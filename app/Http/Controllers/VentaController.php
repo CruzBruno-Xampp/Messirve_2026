@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cliente;
 use App\Models\DetalleMovimiento;
 use App\Models\Movimiento;
+use App\Models\MetodoPago;
 use App\Models\Stock;
 use App\Models\Sucursal;
 use App\Models\TipoMovimiento;
@@ -51,10 +52,22 @@ class VentaController extends Controller
 
         $zonaHoraria = self::ZONA_HORARIA;
 
+        $usuario = auth('web')->user();
+        $usuario->loadMissing('rol');
+
+        $esDueno = $usuario->rol
+            && $usuario->rol->nombre === 'DUEÑO';
+
+        $metodosPago = $esDueno
+            ? MetodoPago::query()->orderBy('idmetodopago')->get()
+            : collect();
+
         return view('ventas.index', compact(
             'ventas',
             'resumen',
-            'zonaHoraria'
+            'zonaHoraria',
+            'esDueno',
+            'metodosPago'
         ));
     }
 
@@ -72,6 +85,7 @@ class VentaController extends Controller
             'cliente',
             'usuario',
             'sucursal',
+            'metodoPago',
             'detalles' => fn ($consulta) => $consulta
                 ->with('producto')
                 ->orderBy('iddetalleventa'),
@@ -324,10 +338,27 @@ class VentaController extends Controller
             ? (int) $sucursales->first()->idsucursal
             : (int) $usuario->idsucursal;
 
+        $metodosPago = MetodoPago::query()
+            ->where('estado', 1)
+            ->orderBy('idmetodopago')
+            ->get();
+
+        $metodoEfectivo = $metodosPago->first(
+            fn (MetodoPago $metodo) => mb_strtoupper(trim($metodo->nombre)) === 'EFECTIVO'
+        );
+
+        $idMetodoPagoInicial = (int) (
+            $metodoEfectivo?->idmetodopago
+            ?? $metodosPago->first()?->idmetodopago
+            ?? 0
+        );
+
         return view('ventas.crear', compact(
             'sucursales',
             'idSucursalInicial',
-            'puedeElegirSucursal'
+            'puedeElegirSucursal',
+            'metodosPago',
+            'idMetodoPagoInicial'
         ));
     }
 
@@ -652,11 +683,9 @@ class VentaController extends Controller
                 'stock.idsucursal',
                 'stock.stockactual',
                 'sucursales.nombre as sucursal',
-                'marcas.nombre as marca',
             ])
             ->join('productos', 'productos.idproducto', '=', 'stock.idproducto')
             ->join('sucursales', 'sucursales.idsucursal', '=', 'stock.idsucursal')
-            ->leftJoin('marcas', 'marcas.idmarca', '=', 'productos.idmarca')
             ->whereIn('productos.idproducto', $ids)
             ->where('stock.estado', 1)
             ->where('stock.stockactual', '>', 0)
@@ -682,7 +711,6 @@ class VentaController extends Controller
                     'codigofabricante' => $producto->codigofabricante,
                     'codigobarra' => $producto->codigobarra,
                     'descripcion' => $producto->descripcion,
-                    'marca' => $producto->marca ?: 'Sin marca',
                     'pvp' => (float) $producto->pvp,
                     'stocklocal' => $stockLocal,
                     'stocktotal' => $stockTotal,
@@ -853,6 +881,13 @@ class VentaController extends Controller
                 Rule::in(['consumidor_final', 'registrado']),
             ],
             'idcliente' => ['nullable', 'integer'],
+            'descuento_adicional' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'idmetodopago' => [
+                'required',
+                'integer',
+                Rule::exists('metodos_pago', 'idmetodopago')
+                    ->where(fn ($consulta) => $consulta->where('estado', 1)),
+            ],
             'productos' => ['required', 'array', 'min:1', 'max:100'],
             'productos.*.idproducto' => ['required', 'integer', 'distinct'],
             'productos.*.cantidad' => [
@@ -866,6 +901,12 @@ class VentaController extends Controller
             'idsucursal.exists' => 'La sucursal seleccionada no está activa.',
             'tipo_cliente.required' => 'Seleccioná un cliente válido.',
             'tipo_cliente.in' => 'La selección del cliente no es válida.',
+            'descuento_adicional.numeric' => 'El descuento adicional debe ser un número.',
+            'descuento_adicional.min' => 'El descuento adicional no puede ser menor a 0%.',
+            'descuento_adicional.max' => 'El descuento adicional no puede superar el 100%.',
+            'idmetodopago.required' => 'Seleccioná un medio de pago.',
+            'idmetodopago.integer' => 'El medio de pago seleccionado no es válido.',
+            'idmetodopago.exists' => 'El medio de pago seleccionado no existe o está inactivo.',
             'productos.required' => 'Agregá al menos un producto.',
             'productos.min' => 'Agregá al menos un producto.',
             'productos.max' => 'Una venta no puede superar las 100 líneas.',
@@ -880,6 +921,10 @@ class VentaController extends Controller
 
         $idCliente = null;
         $porcentajeDescuentoLocal = 0.0;
+        $porcentajeDescuentoAdicional = round(
+            (float) ($datos['descuento_adicional'] ?? 0),
+            2
+        );
 
         if ($datos['tipo_cliente'] === 'registrado') {
             $idClienteSolicitado = (int) ($datos['idcliente'] ?? 0);
@@ -920,8 +965,29 @@ class VentaController extends Controller
             $idSucursalVenta,
             $idCliente,
             $porcentajeDescuentoLocal,
+            $porcentajeDescuentoAdicional,
             $usuario
         ) {
+            $metodoPago = MetodoPago::query()
+                ->whereKey((int) $datos['idmetodopago'])
+                ->where('estado', 1)
+                ->lockForUpdate()
+                ->first();
+
+            if (!$metodoPago) {
+                throw ValidationException::withMessages([
+                    'idmetodopago' => 'El medio de pago seleccionado ya no está disponible.',
+                ]);
+            }
+
+            $porcentajeRecargo = round((float) $metodoPago->recargo, 2);
+
+            if ($porcentajeRecargo < 0 || $porcentajeRecargo > 100) {
+                throw ValidationException::withMessages([
+                    'idmetodopago' => 'El recargo configurado para este medio de pago no es válido.',
+                ]);
+            }
+
             $tipoMovimiento = TipoMovimiento::query()
                 ->where('codigo', 'VENTA_STOCK')
                 ->where('estado', 1)
@@ -1069,8 +1135,25 @@ class VentaController extends Controller
                 }
 
                 $subtotalLinea = round($precioUnitario * $cantidad, 2);
-                $descuentoLinea = round(
+
+                // Primero se aplica el beneficio automático del tipo de cliente.
+                $descuentoClienteLinea = round(
                     $subtotalLinea * ($porcentajeDescuentoLocal / 100),
+                    2
+                );
+                $subtotalTrasCliente = round(
+                    $subtotalLinea - $descuentoClienteLinea,
+                    2
+                );
+
+                // El descuento adicional lo decide el vendedor y se aplica sobre
+                // el importe que quedó luego del descuento del cliente.
+                $descuentoAdicionalLinea = round(
+                    $subtotalTrasCliente * ($porcentajeDescuentoAdicional / 100),
+                    2
+                );
+                $descuentoLinea = round(
+                    $descuentoClienteLinea + $descuentoAdicionalLinea,
                     2
                 );
                 $totalLinea = round($subtotalLinea - $descuentoLinea, 2);
@@ -1148,6 +1231,12 @@ class VentaController extends Controller
                 $totalVenta = round($totalVenta + $totalLinea, 2);
             }
 
+            $importeRecargo = round(
+                $totalVenta * ($porcentajeRecargo / 100),
+                2
+            );
+            $totalFinalVenta = round($totalVenta + $importeRecargo, 2);
+
             $fecha = now('UTC');
 
             $venta = Venta::create([
@@ -1160,7 +1249,12 @@ class VentaController extends Controller
                 'estado' => 'CONFIRMADA',
                 'subtotal' => $subtotalVenta,
                 'descuento' => $descuentoVenta,
-                'total' => $totalVenta,
+                'porcentajedescuentocliente' => $porcentajeDescuentoLocal,
+                'porcentajedescuentoadicional' => $porcentajeDescuentoAdicional,
+                'idmetodopago' => (int) $metodoPago->idmetodopago,
+                'porcentajerecargo' => $porcentajeRecargo,
+                'importerecargo' => $importeRecargo,
+                'total' => $totalFinalVenta,
                 'facturada' => false,
             ]);
 
@@ -1245,6 +1339,73 @@ class VentaController extends Controller
             'usa_stock_remoto' => (bool) $resultado['usaStockRemoto'],
             'redirect' => route('ventas.index'),
         ], 201);
+    }
+
+    /**
+     * Permite al dueño actualizar el porcentaje de recargo de los medios de pago.
+     */
+    public function actualizarMetodosPago(Request $request): RedirectResponse
+    {
+        $usuario = auth('web')->user();
+        $usuario->loadMissing('rol');
+
+        abort_unless(
+            $usuario->rol && $usuario->rol->nombre === 'DUEÑO',
+            403,
+            'Sólo el dueño puede modificar los recargos de los medios de pago.'
+        );
+
+        $datos = $request->validate([
+            'metodos' => ['required', 'array', 'min:1', 'max:50'],
+            'metodos.*.idmetodopago' => [
+                'required',
+                'integer',
+                'distinct',
+                Rule::exists('metodos_pago', 'idmetodopago'),
+            ],
+            'metodos.*.recargo' => ['required', 'numeric', 'min:0', 'max:100'],
+        ], [
+            'metodos.required' => 'No se recibieron medios de pago para actualizar.',
+            'metodos.*.idmetodopago.required' => 'Falta identificar uno de los medios de pago.',
+            'metodos.*.idmetodopago.distinct' => 'Hay un medio de pago repetido.',
+            'metodos.*.idmetodopago.exists' => 'Uno de los medios de pago ya no existe.',
+            'metodos.*.recargo.required' => 'Ingresá el porcentaje de recargo.',
+            'metodos.*.recargo.numeric' => 'El recargo debe ser un número.',
+            'metodos.*.recargo.min' => 'El recargo no puede ser menor a 0%.',
+            'metodos.*.recargo.max' => 'El recargo no puede superar el 100%.',
+        ]);
+
+        DB::transaction(function () use ($datos): void {
+            $ids = collect($datos['metodos'])
+                ->pluck('idmetodopago')
+                ->map(fn ($id) => (int) $id)
+                ->values();
+
+            $metodos = MetodoPago::query()
+                ->whereIn('idmetodopago', $ids)
+                ->orderBy('idmetodopago')
+                ->lockForUpdate()
+                ->get()
+                ->keyBy(fn (MetodoPago $metodo) => (int) $metodo->idmetodopago);
+
+            foreach ($datos['metodos'] as $fila) {
+                $idMetodo = (int) $fila['idmetodopago'];
+                $metodo = $metodos->get($idMetodo);
+
+                if (!$metodo) {
+                    throw ValidationException::withMessages([
+                        'metodos' => 'Uno de los medios de pago ya no está disponible.',
+                    ]);
+                }
+
+                $metodo->recargo = round((float) $fila['recargo'], 2);
+                $metodo->save();
+            }
+        }, 3);
+
+        return redirect()
+            ->route('ventas.index')
+            ->with('success', 'Los recargos de los medios de pago se actualizaron correctamente.');
     }
 
     /**

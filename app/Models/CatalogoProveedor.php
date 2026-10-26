@@ -57,6 +57,89 @@ class CatalogoProveedor extends Model
         'estado' => 'boolean',
     ];
 
+
+
+    /**
+     * Sincroniza qué lista debe quedar vigente según la fecha actual.
+     *
+     * Reglas:
+     * - una lista con fecha futura queda programada (estado 0);
+     * - la lista con fecha más reciente menor o igual a hoy queda vigente;
+     * - si no hay listas fechadas aplicables, se usa la lista sin fecha más reciente;
+     * - si todas las listas tienen fecha futura, ninguna queda vigente todavía.
+     *
+     * Puede recibir un proveedor concreto o sincronizar todos.
+     */
+    public static function sincronizarVigencias(?int $idProveedor = null): void
+    {
+        $consultaProveedores = static::query()
+            ->select('idproveedor')
+            ->distinct();
+
+        if ($idProveedor !== null) {
+            $consultaProveedores->where('idproveedor', $idProveedor);
+        }
+
+        $idsProveedores = $consultaProveedores
+            ->pluck('idproveedor')
+            ->map(fn ($id) => (int) $id);
+
+        $hoy = now()->toDateString();
+
+        foreach ($idsProveedores as $id) {
+            static::query()
+                ->where('idproveedor', $id)
+                ->update(['estado' => 0]);
+
+            $catalogoVigente = static::query()
+                ->where('idproveedor', $id)
+                ->where(function ($query) use ($hoy): void {
+                    $query
+                        ->whereNull('fecha_vigencia')
+                        ->orWhereDate('fecha_vigencia', '<=', $hoy);
+                })
+                ->orderByRaw('fecha_vigencia IS NULL ASC')
+                ->orderByDesc('fecha_vigencia')
+                ->orderByDesc('idcatalogoproveedor')
+                ->first();
+
+            if ($catalogoVigente !== null) {
+                static::query()
+                    ->where(
+                        'idcatalogoproveedor',
+                        $catalogoVigente->idcatalogoproveedor
+                    )
+                    ->update(['estado' => 1]);
+            }
+        }
+    }
+
+    /**
+     * Estado que se muestra en pantalla para una lista.
+     * "programada" tiene prioridad sobre el valor persistido de estado.
+     */
+    public function estadoTemporal(): string
+    {
+        if (
+            $this->fecha_vigencia !== null
+            && $this->fecha_vigencia->isAfter(now()->startOfDay())
+        ) {
+            return 'programada';
+        }
+
+        return $this->estado ? 'vigente' : 'historica';
+    }
+
+    public function esVigenteHoy(): bool
+    {
+        return $this->estadoTemporal() === 'vigente';
+    }
+
+    public function esProgramada(): bool
+    {
+        return $this->estadoTemporal() === 'programada';
+    }
+
     /*
      * Proveedor al que pertenece este catálogo.
      */

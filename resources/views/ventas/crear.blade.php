@@ -264,23 +264,88 @@
                 </div>
 
                 <div class="carrito__pie carrito__pie--fijo">
-                    <div class="carrito__total">
-                        <span>Total</span>
-                        <strong id="total-venta">$ 0,00</strong>
+                    <div class="carrito__resumen-venta">
+                        <div class="carrito__descuento-adicional">
+                            <div class="carrito__descuento-cabecera">
+                                <span class="carrito__descuento-icono" aria-hidden="true">%</span>
+                                <div>
+                                    <label for="descuento-adicional">Descuento adicional</label>
+                                    <small id="ayuda-descuento-adicional">
+                                        Se aplica después del descuento automático del cliente.
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="carrito__descuento-control">
+                                <input
+                                    type="number"
+                                    id="descuento-adicional"
+                                    name="descuento_adicional"
+                                    min="0"
+                                    max="100"
+                                    step="0.01"
+                                    value="0"
+                                    inputmode="decimal"
+                                    aria-describedby="ayuda-descuento-adicional"
+                                >
+                                <span aria-hidden="true">%</span>
+                            </div>
+                        </div>
+
+                        <div class="carrito__medio-pago">
+                            <div>
+                                <label for="metodo-pago">Medio de pago *</label>
+                                <small>El recargo se toma de la configuración vigente.</small>
+                            </div>
+
+                            <select id="metodo-pago" name="idmetodopago" @disabled($metodosPago->isEmpty())>
+                                @forelse ($metodosPago as $metodoPago)
+                                    <option
+                                        value="{{ $metodoPago->idmetodopago }}"
+                                        data-recargo="{{ number_format((float) $metodoPago->recargo, 2, '.', '') }}"
+                                        @selected((int) $metodoPago->idmetodopago === (int) $idMetodoPagoInicial)
+                                    >
+                                        {{ $metodoPago->nombre }}
+                                        @if ((float) $metodoPago->recargo > 0)
+                                            — +{{ number_format((float) $metodoPago->recargo, 2, ',', '.') }}%
+                                        @endif
+                                    </option>
+                                @empty
+                                    <option value="">Sin medios de pago activos</option>
+                                @endforelse
+                            </select>
+                        </div>
+
+                        <div class="carrito__total carrito__total--desglosado">
+                            <div class="carrito__total-linea">
+                                <span>Después de descuentos</span>
+                                <strong id="base-pago">$ 0,00</strong>
+                            </div>
+                            <div class="carrito__total-linea">
+                                <span id="etiqueta-recargo">Recargo 0%</span>
+                                <strong id="importe-recargo">$ 0,00</strong>
+                            </div>
+                            <div class="carrito__total-linea carrito__total-linea--final">
+                                <span>Total a cobrar</span>
+                                <strong id="total-venta">$ 0,00</strong>
+                            </div>
+                        </div>
                     </div>
 
-                    <button
-                        type="button"
-                        class="boton boton--primario boton--ancho"
-                        id="confirmar-venta"
-                        disabled
-                    >
-                        Confirmar venta
-                    </button>
+                    <div class="carrito__acciones">
+                        <button
+                            type="button"
+                            class="boton boton--primario boton--ancho"
+                            id="confirmar-venta"
+                            disabled
+                        >
+                            Confirmar venta
+                        </button>
 
-                    <small id="estado-confirmacion" role="status" aria-live="polite">
-                        Agregá al menos un producto para confirmar la venta.
-                    </small>
+                        <small id="estado-confirmacion" role="status" aria-live="polite">
+                            Agregá al menos un producto para confirmar la venta.
+                        </small>
+                    </div>
                 </div>
             </section>
         </div>

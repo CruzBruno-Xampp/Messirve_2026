@@ -46,15 +46,15 @@ input {
 
 .pagina-login {
     display: grid;
-    width: min(1120px, calc(100% - 40px));
-    min-height: 680px;
-    grid-template-columns: minmax(0, 0.9fr) minmax(440px, 1.1fr);
+    width: min(1080px, calc(100% - 40px));
+    min-height: 640px;
+    grid-template-columns: minmax(360px, 0.82fr) minmax(440px, 1.18fr);
     overflow: hidden;
-    margin: 40px auto;
-    border: 1px solid rgba(22, 45, 82, 0.08);
-    border-radius: 26px;
+    margin: 36px auto;
+    border: 1px solid rgba(22, 45, 82, 0.09);
+    border-radius: 20px;
     background: var(--blanco);
-    box-shadow: var(--sombra);
+    box-shadow: 0 18px 48px rgba(22, 45, 82, 0.11);
 }
 
 .panel-marca {
@@ -64,39 +64,35 @@ input {
     flex-direction: column;
     justify-content: space-between;
     overflow: hidden;
-    padding: 44px;
+    padding: 42px;
     background:
-        radial-gradient(
-            circle at 15% 10%,
-            rgba(65, 152, 232, 0.42),
-            transparent 32%
-        ),
-        linear-gradient(150deg, #172f57 0%, #0f203d 100%);
+        radial-gradient(circle at 18% 12%, rgba(79, 159, 232, 0.16), transparent 28%),
+        linear-gradient(155deg, #173a68 0%, #112b4e 58%, #0d223f 100%);
     color: var(--blanco);
 }
 
-.panel-marca::after {
+.panel-marca::before {
     position: absolute;
-    right: -85px;
-    bottom: -85px;
-    width: 260px;
-    height: 260px;
-    border: 55px solid rgba(255, 193, 7, 0.95);
-    border-radius: 50%;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+    background-size: 26px 26px;
     content: "";
+    pointer-events: none;
 }
 
 .marca,
 .panel-marca__contenido,
 .panel-marca > small {
     position: relative;
-    z-index: 1;
+    z-index: 2;
 }
 
 .marca {
-    font-size: 1.36rem;
+    font-size: 1.18rem;
     font-weight: 900;
-    letter-spacing: 0.035em;
+    letter-spacing: 0.05em;
 }
 
 .marca span {
@@ -104,79 +100,253 @@ input {
 }
 
 .panel-marca__contenido {
-    max-width: 410px;
+    width: 100%;
+    max-width: 360px;
 }
 
 .etiqueta {
     display: inline-flex;
-    margin: 0 0 18px;
-    padding: 7px 11px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 30px;
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--amarillo);
-    font-size: 0.74rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 15px;
+    color: #bed0e3;
+    font-size: 0.68rem;
+    font-weight: 850;
+    letter-spacing: 0.11em;
     text-transform: uppercase;
 }
 
+.etiqueta::before {
+    width: 20px;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--amarillo);
+    content: "";
+}
+
 .panel-marca h1 {
+    max-width: 340px;
     margin: 0;
-    font-size: clamp(2rem, 4vw, 3.15rem);
+    font-size: clamp(2rem, 3.5vw, 2.65rem);
+    font-weight: 820;
+    letter-spacing: -0.025em;
     line-height: 1.08;
 }
 
 .panel-marca__contenido > p:not(.etiqueta) {
-    margin: 20px 0 25px;
-    color: #d8e3f1;
-    font-size: 0.96rem;
-    line-height: 1.7;
-}
-
-.panel-marca ul {
-    display: grid;
-    gap: 12px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.panel-marca li {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: #eef4fb;
-    font-size: 0.9rem;
-    font-weight: 650;
-}
-
-.panel-marca li::before {
-    display: grid;
-    width: 22px;
-    height: 22px;
-    flex: 0 0 22px;
-    place-items: center;
-    border-radius: 50%;
-    background: var(--amarillo);
-    color: var(--azul-oscuro);
-    content: "✓";
-    font-size: 0.72rem;
-    font-weight: 900;
+    max-width: 325px;
+    margin: 17px 0 27px;
+    color: #c8d7e6;
+    font-size: 0.89rem;
+    line-height: 1.65;
 }
 
 .panel-marca > small {
-    color: #aebed2;
-    font-size: 0.7rem;
+    color: #96abc1;
+    font-size: 0.66rem;
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
+}
+
+/* =========================================================
+   Escena de pintura
+   ========================================================= */
+
+.escena-pintura {
+    position: relative;
+    width: min(100%, 330px);
+    margin-top: 5px;
+}
+
+.escena-pintura__pared {
+    position: relative;
+    height: 145px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 15px;
+    background:
+        linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.025)),
+        rgba(255, 255, 255, 0.025);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.escena-pintura__pared::after {
+    position: absolute;
+    right: 15px;
+    bottom: 14px;
+    color: rgba(255,255,255,0.22);
+    content: "MES.SIRVE";
+    font-size: 0.57rem;
+    font-weight: 900;
+    letter-spacing: 0.13em;
+}
+
+.escena-pintura__trazo {
+    position: absolute;
+    left: 28px;
+    width: 0;
+    height: 22px;
+    border-radius: 4px 10px 10px 4px;
+    background: linear-gradient(90deg, #ffbf00, #ffd451);
+    opacity: 0.96;
+    transform-origin: left center;
+    animation: pintar-trazo 4.8s ease-in-out infinite;
+}
+
+.escena-pintura__trazo--1 {
+    top: 29px;
+}
+
+.escena-pintura__trazo--2 {
+    top: 56px;
+    animation-delay: 0.22s;
+}
+
+.escena-pintura__trazo--3 {
+    top: 83px;
+    animation-delay: 0.44s;
+}
+
+.rodillo-pintura {
+    position: absolute;
+    top: 20px;
+    left: 22px;
+    width: 68px;
+    height: 95px;
+    z-index: 3;
+    animation: mover-rodillo 4.8s ease-in-out infinite;
+}
+
+.rodillo-pintura__carga {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 52px;
+    height: 19px;
+    border: 3px solid #f4f7fb;
+    border-radius: 7px;
+    background:
+        repeating-linear-gradient(
+            90deg,
+            #ffc107 0 5px,
+            #ffcd38 5px 10px
+        );
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.rodillo-pintura__brazo {
+    position: absolute;
+    top: 16px;
+    left: 43px;
+    width: 3px;
+    height: 48px;
+    border-radius: 999px;
+    background: #dce7f2;
+    transform: rotate(-16deg);
+    transform-origin: top center;
+}
+
+.rodillo-pintura__brazo::after {
+    position: absolute;
+    right: 0;
+    bottom: -2px;
+    width: 17px;
+    height: 3px;
+    border-radius: 999px;
+    background: #dce7f2;
+    content: "";
+    transform: rotate(22deg);
+    transform-origin: right center;
+}
+
+.rodillo-pintura__mango {
+    position: absolute;
+    top: 57px;
+    left: 40px;
+    width: 15px;
+    height: 33px;
+    border-radius: 5px 5px 8px 8px;
+    background: #f7f9fc;
+    box-shadow: 0 3px 9px rgba(0,0,0,0.12);
+    transform: rotate(-17deg);
+}
+
+.escena-pintura__leyenda {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 10px;
+    color: #aebfd1;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.025em;
+}
+
+.escena-pintura__punto {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--amarillo);
+    box-shadow: 0 0 0 4px rgba(255,193,7,0.10);
+}
+
+@keyframes pintar-trazo {
+    0%,
+    9% {
+        width: 0;
+        opacity: 0.2;
+    }
+
+    34%,
+    72% {
+        width: 235px;
+        opacity: 0.96;
+    }
+
+    88%,
+    100% {
+        width: 235px;
+        opacity: 0.18;
+    }
+}
+
+@keyframes mover-rodillo {
+    0%,
+    8% {
+        transform: translate(0, 0) rotate(-2deg);
+    }
+
+    31% {
+        transform: translate(220px, 0) rotate(2deg);
+    }
+
+    38% {
+        transform: translate(220px, 27px) rotate(2deg);
+    }
+
+    55% {
+        transform: translate(0, 27px) rotate(-2deg);
+    }
+
+    62% {
+        transform: translate(0, 54px) rotate(-2deg);
+    }
+
+    77% {
+        transform: translate(220px, 54px) rotate(2deg);
+    }
+
+    88%,
+    100% {
+        transform: translate(220px, 54px) rotate(2deg);
+    }
 }
 
 .panel-formulario {
     display: grid;
     min-width: 0;
     place-items: center;
-    padding: 55px 65px;
+    padding: 52px 62px;
 }
 
 .formulario-contenedor {
@@ -302,22 +472,38 @@ input {
 }
 
 .campo-password input {
-    padding-right: 88px;
+    padding-right: 86px;
+}
+
+/* Oculta el ojo nativo del navegador; Messirve usa su propio botón Mostrar/Ocultar. */
+.campo-password input::-ms-reveal,
+.campo-password input::-ms-clear {
+    display: none;
+}
+
+.campo-password input[type="password"] {
+    appearance: none;
+    -webkit-appearance: none;
 }
 
 .boton-password {
     position: absolute;
     top: 50%;
-    right: 6px;
-    height: 37px;
+    right: 8px;
+    display: inline-flex;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
     border: 0;
     border-radius: 7px;
     background: transparent;
     color: var(--azul);
-    padding: 0 9px;
+    padding: 0 8px;
     cursor: pointer;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 800;
+    line-height: 1;
+    transform: translateY(-50%);
 }
 
 .boton-password:hover,
@@ -342,6 +528,85 @@ input {
     height: 17px;
     margin: 0;
     accent-color: var(--azul);
+}
+
+
+.opciones-acceso {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.enlace-recuperar {
+    color: var(--azul);
+    font-size: 0.79rem;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.enlace-recuperar:hover,
+.enlace-recuperar:focus-visible {
+    outline: none;
+    color: var(--azul-oscuro);
+    text-decoration: underline;
+}
+
+.texto-ayuda-auth {
+    margin: -8px 0 2px;
+    color: var(--texto-suave);
+    font-size: 0.8rem;
+    line-height: 1.55;
+}
+
+.requisitos-password {
+    display: grid;
+    gap: 7px;
+    margin: 2px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.requisito-password {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--texto-suave);
+    font-size: 0.78rem;
+    font-weight: 700;
+    transition: color 0.18s ease;
+}
+
+.requisito-password::before {
+    display: grid;
+    width: 19px;
+    height: 19px;
+    flex: 0 0 19px;
+    place-items: center;
+    border: 1px solid #c9d4e1;
+    border-radius: 50%;
+    background: #f7f9fc;
+    color: #93a0b1;
+    content: "·";
+    font-size: 0.85rem;
+    font-weight: 950;
+}
+
+.requisito-password--cumplido {
+    color: var(--exito);
+}
+
+.requisito-password--cumplido::before {
+    border-color: #9bd6bb;
+    background: var(--exito-fondo);
+    color: var(--exito);
+    content: "✓";
+}
+
+.email-bloqueado {
+    background: #f7f9fc !important;
+    color: var(--texto-suave) !important;
+    cursor: not-allowed;
 }
 
 .boton-ingresar {
@@ -389,6 +654,15 @@ input {
 }
 
 @media (max-width: 900px) {
+    .panel-marca {
+        min-height: 360px;
+    }
+
+    .escena-pintura {
+        width: min(100%, 430px);
+    }
+
+
     .pagina-login {
         width: min(680px, calc(100% - 30px));
         grid-template-columns: 1fr;
@@ -396,9 +670,9 @@ input {
     }
 
     .panel-marca {
-        min-height: 300px;
-        gap: 35px;
-        padding: 32px;
+        min-height: 260px;
+        gap: 28px;
+        padding: 30px 32px;
     }
 
     .panel-marca__contenido {
@@ -406,15 +680,30 @@ input {
     }
 
     .panel-marca h1 {
-        font-size: clamp(1.8rem, 7vw, 2.6rem);
+        font-size: clamp(1.75rem, 6vw, 2.35rem);
     }
 
     .panel-formulario {
         padding: 45px 35px;
     }
+
+    .opciones-acceso {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 11px;
+    }
 }
 
 @media (max-width: 520px) {
+    .escena-pintura {
+        display: none;
+    }
+
+    .panel-marca {
+        min-height: 245px;
+    }
+
+
     .pagina-login {
         width: 100%;
         min-height: 100vh;
@@ -424,12 +713,13 @@ input {
     }
 
     .panel-marca {
-        min-height: 260px;
-        padding: 25px 22px;
+        min-height: 230px;
+        padding: 24px 22px;
     }
 
-    .panel-marca ul,
-    .panel-marca > small {
+    .panel-marca__modulos,
+    .panel-marca > small,
+    .panel-marca::after {
         display: none;
     }
 
@@ -444,6 +734,17 @@ input {
 }
 
 @media (prefers-reduced-motion: reduce) {
+    .rodillo-pintura,
+    .escena-pintura__trazo {
+        animation: none !important;
+    }
+
+    .escena-pintura__trazo {
+        width: 235px;
+        opacity: 0.8;
+    }
+
+
     *,
     *::before,
     *::after {

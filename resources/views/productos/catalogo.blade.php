@@ -236,6 +236,14 @@
                         </option>
 
                         @foreach ($catalogosProveedor as $catalogo)
+                            @php
+                                $estadoTemporalLista = $catalogo->estadoTemporal();
+                                $textoEstadoLista = match ($estadoTemporalLista) {
+                                    'vigente' => 'VIGENTE',
+                                    'programada' => 'PROGRAMADA',
+                                    default => 'Histórica',
+                                };
+                            @endphp
                             <option
                                 value="{{ $catalogo->idcatalogoproveedor }}"
                                 @selected(
@@ -249,7 +257,7 @@
                                     · {{ $catalogo->fecha_vigencia->format('d/m/Y') }}
                                 @endif
 
-                                {{ $catalogo->estado ? ' · VIGENTE' : ' · Histórica' }}
+                                · {{ $textoEstadoLista }}
                             </option>
                         @endforeach
                     </select>
@@ -333,6 +341,13 @@
             >
                 @foreach ($catalogosProveedor as $catalogo)
                     @php
+                        $estadoTemporalLista = $catalogo->estadoTemporal();
+                        $textoEstadoLista = match ($estadoTemporalLista) {
+                            'vigente' => 'Vigente',
+                            'programada' => 'Programada',
+                            default => 'Histórica',
+                        };
+
                         $parametrosLista = [
                             'idproveedor' =>
                                 $proveedorSeleccionado->idproveedor,
@@ -363,12 +378,16 @@
                     >
                         <span
                             class="historial-lista__estado {{
-                                $catalogo->estado
+                                $estadoTemporalLista === 'vigente'
                                     ? 'historial-lista__estado--vigente'
-                                    : ''
+                                    : (
+                                        $estadoTemporalLista === 'programada'
+                                            ? 'historial-lista__estado--programada'
+                                            : ''
+                                    )
                             }}"
                         >
-                            {{ $catalogo->estado ? 'Vigente' : 'Histórica' }}
+                            {{ $textoEstadoLista }}
                         </span>
 
                         <strong>
@@ -519,6 +538,16 @@
                                     $producto =
                                         $detalle->producto;
 
+                                    $estadoTemporalLista = $catalogo?->estadoTemporal() ?? 'historica';
+                                    $listaVigente = $estadoTemporalLista === 'vigente';
+                                    $listaProgramada = $estadoTemporalLista === 'programada';
+
+                                    $textoEstadoLista = match ($estadoTemporalLista) {
+                                        'vigente' => 'Vigente',
+                                        'programada' => 'Programada',
+                                        default => 'Histórica',
+                                    };
+
                                     $clasificacion = collect([
                                         $detalle->linea_proveedor,
                                         $detalle->tipo_producto_proveedor,
@@ -546,12 +575,16 @@
                                         @if ($catalogo)
                                             <span
                                                 class="etiqueta-lista {{
-                                                    $catalogo->estado
+                                                    $listaVigente
                                                         ? 'etiqueta-lista--vigente'
-                                                        : ''
+                                                        : (
+                                                            $listaProgramada
+                                                                ? 'etiqueta-lista--programada'
+                                                                : ''
+                                                        )
                                                 }}"
                                             >
-                                                {{ $catalogo->estado ? 'Vigente' : 'Histórica' }}
+                                                {{ $textoEstadoLista }}
                                             </span>
                                         @endif
                                     </td>
@@ -654,7 +687,7 @@
                                             <div class="acciones-catalogo">
                                                 @if (
                                                     $puedeCompararPrecios
-                                                    && $catalogo?->estado
+                                                    && $listaVigente
                                                     && (
                                                         $detalle->idproducto !== null
                                                         || trim((string) $detalle->codigobarra) !== ''
@@ -674,7 +707,7 @@
                                                 @if (
                                                     $puedeCrearProductos
                                                     && $detalle->idproducto === null
-                                                    && $catalogo?->estado
+                                                    && $listaVigente
                                                 )
                                                     <a
                                                         href="{{ route(
@@ -688,12 +721,16 @@
                                                     </a>
                                                 @elseif (
                                                     $detalle->idproducto !== null
-                                                    && $catalogo?->estado
+                                                    && $listaVigente
                                                 )
                                                     <span class="accion-resuelta">
                                                         Vinculado
                                                     </span>
-                                                @elseif (!$catalogo?->estado)
+                                                @elseif ($listaProgramada)
+                                                    <span class="accion-programada">
+                                                        Programada
+                                                    </span>
+                                                @elseif (!$listaVigente)
                                                     <span class="accion-historica">
                                                         Sólo consulta
                                                     </span>
