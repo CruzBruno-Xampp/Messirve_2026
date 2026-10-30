@@ -7,7 +7,7 @@
 
     <title>Nueva venta | Messirve</title>
 
-    <link rel="stylesheet" href="{{ asset('css/ventas/crear.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/ventas/crear.css') }}?v=20261030-ui2">
     <link rel="stylesheet" href="{{ asset('css/admin/barra-lateral.css') }}">
 </head>
 
@@ -21,6 +21,10 @@
         data-url-producto-codigo="{{ route('ventas.productos.codigo') }}"
         data-url-clientes="{{ route('ventas.clientes.buscar') }}"
         data-url-guardar="{{ route('ventas.guardar') }}"
+        data-url-mercadopago="{{ route('ventas.qr.crear') }}"
+        data-url-mercadopago-consultar="{{ route('ventas.qr.consultar') }}"
+        data-url-mercadopago-confirmar="{{ route('ventas.qr.confirmar') }}"
+        data-url-mercadopago-recuperar="{{ route('ventas.qr.recuperar') }}"
     >
         <header class="encabezado-principal encabezado-principal--compacto">
             <div>
@@ -347,6 +351,32 @@
                         </small>
                     </div>
                 </div>
+                <section id="panel-mercadopago" class="panel-qr-seguimiento" hidden aria-label="Seguimiento del cobro con Mercado Pago">
+                    <div class="panel-qr-seguimiento__encabezado">
+                        <div>
+                            <span class="panel-qr-seguimiento__etiqueta">MERCADO PAGO · CAJA 1</span>
+                            <h3>Cobro con QR fijo <span class="panel-qr-seguimiento__prueba">Pruebas</span></h3>
+                        </div>
+                        <div class="panel-qr-seguimiento__importe">
+                            <span>Importe de la orden</span>
+                            <strong id="importe-mercadopago"></strong>
+                        </div>
+                    </div>
+                    <div class="panel-qr-seguimiento__cuerpo">
+                        <div class="panel-qr-seguimiento__instrucciones">
+                            <p>El cliente escanea el QR fijo impreso de Caja 1. Messirve verifica el pago mientras esta pantalla permanece abierta.</p>
+                            <a id="enlace-mercadopago" class="boton boton--primario" href="#" hidden>QR fijo impreso en mostrador</a>
+                            <p id="estado-mercadopago" class="panel-qr-seguimiento__estado" role="status" aria-live="polite"></p>
+                        </div>
+                        <div class="panel-qr-seguimiento__detalle">
+                            <label for="payment-id-mercadopago">ID de orden</label>
+                            <input id="payment-id-mercadopago" type="text" autocomplete="off" placeholder="Orden QR" readonly>
+                            <div class="panel-qr-seguimiento__referencia">Referencia: <code id="referencia-mercadopago"></code></div>
+                            <button type="button" class="boton boton--secundario" id="consultar-mercadopago">Consultar estado</button>
+                        </div>
+                    </div>
+                    <p class="panel-qr-seguimiento__advertencia">Solo se registra una venta con el pago acreditado y verificado. Si falla el registro, no vuelvas a cobrar: conciliá primero la orden.</p>
+                </section>
             </section>
         </div>
     </main>
@@ -560,6 +590,6 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js" defer></script>
-    <script src="{{ asset('js/ventas/crear.js') }}" defer></script>
+    <script src="{{ asset('js/ventas/crear.js') }}?v=20261030-ui2" defer></script>
 </body>
 </html>

@@ -10,6 +10,7 @@ use App\Models\Stock;
 use App\Models\Sucursal;
 use App\Models\TipoMovimiento;
 use App\Models\Venta;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -51,6 +52,8 @@ class VentaController extends Controller
         ];
 
         $zonaHoraria = self::ZONA_HORARIA;
+
+        /** @var User|null $usuario */
 
         $usuario = auth('web')->user();
         $usuario->loadMissing('rol');
@@ -240,6 +243,8 @@ class VentaController extends Controller
                     (int) $stock->idsucursal . ':' . (int) $stock->idproducto
                 );
 
+            /** @var User|null $usuario */
+
             $usuario = auth('web')->user();
             $fechaAnulacion = now('UTC');
 
@@ -301,6 +306,7 @@ class VentaController extends Controller
      */
     public function crear(): View
     {
+        /** @var User|null $usuario */
         $usuario = auth('web')->user();
         $usuario->loadMissing('rol');
 
@@ -958,6 +964,8 @@ class VentaController extends Controller
             }
         }
 
+        /** @var User|null $usuario */
+
         $usuario = auth('web')->user();
 
         $resultado = DB::transaction(function () use (
@@ -977,6 +985,15 @@ class VentaController extends Controller
             if (!$metodoPago) {
                 throw ValidationException::withMessages([
                     'idmetodopago' => 'El medio de pago seleccionado ya no está disponible.',
+                ]);
+            }
+
+            // Protección temporal hasta completar la integración con Mercado Pago.
+            if (in_array((int) $metodoPago->idmetodopago, [2, 4], true)) {
+                throw ValidationException::withMessages([
+                    'idmetodopago' =>
+                        'Este medio de pago requiere confirmación de Mercado Pago. '
+                        . 'La integración todavía está en preparación.',
                 ]);
             }
 
@@ -1346,6 +1363,7 @@ class VentaController extends Controller
      */
     public function actualizarMetodosPago(Request $request): RedirectResponse
     {
+        /** @var User|null $usuario */
         $usuario = auth('web')->user();
         $usuario->loadMissing('rol');
 
@@ -1416,6 +1434,7 @@ class VentaController extends Controller
         string $accion = 'registrar'
     ): void
     {
+        /** @var User|null $usuario */
         $usuario = auth('web')->user();
         $usuario->loadMissing('rol');
 
@@ -1452,6 +1471,7 @@ class VentaController extends Controller
      */
     private function puedeUsuarioAnularVenta(Venta $venta): bool
     {
+        /** @var User|null $usuario */
         $usuario = auth('web')->user();
 
         if (!$usuario || !$usuario->tienePermiso('ventas.anular')) {
@@ -1498,6 +1518,7 @@ class VentaController extends Controller
      */
     private function validarAnulacionPermitida(Venta $venta): void
     {
+        /** @var User|null $usuario */
         $usuario = auth('web')->user();
         $usuario->loadMissing('rol');
 
@@ -1578,6 +1599,7 @@ class VentaController extends Controller
      */
     private function consultaVentasPermitidas(): Builder
     {
+        /** @var User|null $usuario */
         $usuario = auth('web')->user();
         $usuario->loadMissing('rol');
 

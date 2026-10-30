@@ -79,6 +79,17 @@
     const urlProductoCodigo = aplicacion.dataset.urlProductoCodigo;
     const urlClientes = aplicacion.dataset.urlClientes;
     const urlGuardar = aplicacion.dataset.urlGuardar;
+    const urlMercadoPago = aplicacion.dataset.urlMercadopago;
+    const urlConsultarMp = aplicacion.dataset.urlMercadopagoConsultar;
+    const urlConfirmarMp = aplicacion.dataset.urlMercadopagoConfirmar;
+    const urlRecuperarMp = aplicacion.dataset.urlMercadopagoRecuperar;
+    const panelMp = document.getElementById('panel-mercadopago');
+    const enlaceMp = document.getElementById('enlace-mercadopago');
+    const referenciaMp = document.getElementById('referencia-mercadopago');
+    const importeMp = document.getElementById('importe-mercadopago');
+    const pagoIdMp = document.getElementById('payment-id-mercadopago');
+    const botonConsultarMp = document.getElementById('consultar-mercadopago');
+    const estadoMp = document.getElementById('estado-mercadopago');
     const csrfToken = document
         .querySelector('meta[name="csrf-token"]')
         ?.getAttribute('content');
@@ -101,6 +112,13 @@
     let elementoConFocoAntesDelModal = null;
     let elementoConFocoAntesDelModalProductos = null;
     let confirmandoVenta = false;
+    let intentoMpActual = null;
+    let pagoMpVerificado = false;
+    let consultaMpEnCurso = false;
+    let confirmacionMpEnCurso = false;
+    let temporizadorMp = null;
+    let monitorMpActivo = false;
+    let erroresMonitorMp = 0;
     let permitirSalida = false;
     let sucursalAnterior = sucursal.value;
     let escanerCodigoBarras = null;
@@ -1256,14 +1274,21 @@
         metodoPago.toggleAttribute('aria-invalid', !pagoValido);
 
         botonConfirmarVenta.disabled = confirmandoVenta
+            || intentoMpActual !== null
             || !clienteValido
             || !hayProductos
             || !adicionalValido
-            || !pagoValido;
+            || !pagoValido
+            || Number(metodoPago.value) === 4;
 
         if (confirmandoVenta) {
             return;
         }
+
+        const usaMercadoPago = Number(metodoPago.value) === 2;
+        botonConfirmarVenta.textContent = usaMercadoPago
+            ? 'Preparar cobro QR fijo'
+            : 'Confirmar venta';
 
         estadoConfirmacion.className = '';
 
@@ -1276,11 +1301,17 @@
         } else if (!pagoValido) {
             estadoConfirmacion.classList.add('estado-confirmacion--error');
             estadoConfirmacion.textContent = 'Seleccioná un medio de pago activo.';
+        } else if (Number(metodoPago.value) === 4) {
+            estadoConfirmacion.textContent = 'Crédito no disponible por QR: falta definir los recargos según el medio real de pago.';
         } else if (!hayProductos) {
             estadoConfirmacion.textContent = 'Agregá al menos un producto para confirmar la venta.';
         } else {
             estadoConfirmacion.classList.add('estado-confirmacion--correcto');
-            estadoConfirmacion.textContent = 'La venta está lista para confirmar.';
+            estadoConfirmacion.textContent = intentoMpActual
+                ? 'Existe una solicitud de Mercado Pago. Resolvé su estado antes de preparar otra venta.'
+                : usaMercadoPago
+                    ? 'Lista para preparar el cobro con el QR fijo de Caja 1.'
+                    : 'La venta está lista para confirmar.';
         }
     }
 
@@ -1298,6 +1329,181 @@
         return datos?.message || 'No se pudo registrar la venta.';
     }
 
+    // El navegador nunca confirma un pago por sí mismo: el servidor consulta la API.
+    async function solicitarJsonMp(url, cuerpo) {
+        const respuesta = await fetch(url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify(cuerpo),
+        });
+        const datos = await respuesta.json().catch(() => ({}));
+        if (!respuesta.ok) {
+            throw new Error(primerMensajeDeError(datos));
+        }
+        return datos;
+    }
+
+    function mostrarEstadoMp(mensaje, error = false) {
+        if (!estadoMp) return;
+        estadoMp.textContent = mensaje;
+        estadoMp.style.color = error ? '#a52727' : '#173b75';
+    }
+
+    async function crearCobroMercadoPago(datosVenta) {
+        if (!panelMp || !urlMercadoPago || !urlConsultarMp || !urlConfirmarMp) {
+            throw new Error('Falta configurar la interfaz de Mercado Pago.');
+        }
+        if (intentoMpActual) {
+            throw new Error('Ya existe un intento. Verificá ese pago antes de continuar.');
+        }
+        const datos = await solicitarJsonMp(urlMercadoPago, datosVenta);
+        if (!datos.referencia || !datos.order_id) {
+            throw new Error('La respuesta de Mercado Pago está incompleta; revisá los intentos guardados antes de repetir.');
+        }
+        intentoMpActual = String(datos.referencia);
+        pagoMpVerificado = false;
+        panelMp.hidden = false;
+        referenciaMp.textContent = intentoMpActual;
+        importeMp.textContent = formatoMoneda.format(Number(datos.importe));
+        enlaceMp.hidden = true;
+        enlaceMp.removeAttribute('href');
+        enlaceMp.target = '_blank';
+        enlaceMp.rel = 'noopener noreferrer';
+        pagoIdMp.value = String(datos.order_id);
+        mostrarEstadoMp('Orden asociada al QR fijo de Caja 1. El cliente escanea el QR impreso. Consultá el estado, sin confirmar venta todavía.');
+        panelMp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        actualizarEstadoConfirmacion();
+        iniciarMonitorMp();
+    }
+
+    function detenerMonitorMp() {
+        monitorMpActivo = false;
+        window.clearTimeout(temporizadorMp);
+        temporizadorMp = null;
+    }
+
+    function programarConsultaMp() {
+        window.clearTimeout(temporizadorMp);
+        if (monitorMpActivo && intentoMpActual) {
+            temporizadorMp = window.setTimeout(consultarEstadoMercadoPago, 5000);
+        }
+    }
+
+    function iniciarMonitorMp() {
+        monitorMpActivo = true;
+        erroresMonitorMp = 0;
+        programarConsultaMp();
+    }
+
+    async function consultarEstadoMercadoPago() {
+        if (!intentoMpActual || consultaMpEnCurso || confirmacionMpEnCurso) return;
+        consultaMpEnCurso = true;
+        botonConsultarMp.disabled = true;
+        try {
+            const datos = await solicitarJsonMp(urlConsultarMp, { referencia: intentoMpActual });
+            erroresMonitorMp = 0;
+            mostrarEstadoMp(datos.mensaje || `Estado: ${datos.estado_mp}`);
+            if (datos.venta_confirmada === true) {
+                detenerMonitorMp();
+                permitirSalida = true;
+                window.location.assign('/ventas');
+                return;
+            }
+            if (['REVISION', 'QR_REVISAR'].includes(datos.estado_local)) {
+                detenerMonitorMp();
+                mostrarEstadoMp('Este cobro necesita conciliación manual. No se hará otra confirmación automática.', true);
+                return;
+            }
+            if (datos.acreditada_en_mp === true) {
+                detenerMonitorMp();
+                pagoMpVerificado = true;
+                // La verificación definitiva ocurre otra vez en Laravel.
+                await confirmarPagoMercadoPago();
+                return;
+            }
+            if (['expired', 'canceled'].includes(datos.estado_mp) ||
+                ['VENCIDO', 'CANCELADO', 'REVISION', 'QR_REVISAR'].includes(datos.estado_local)) {
+                detenerMonitorMp();
+                if (['expired', 'canceled'].includes(datos.estado_mp) &&
+                    ['VENCIDO', 'CANCELADO'].includes(datos.estado_local)) {
+                    intentoMpActual = null;
+                    pagoMpVerificado = false;
+                    mostrarEstadoMp('Orden vencida o cancelada y conciliada. Podés preparar una nueva venta QR.', true);
+                    actualizarEstadoConfirmacion();
+                } else {
+                    mostrarEstadoMp('El pago requiere revisión manual. No generes otro cobro.', true);
+                }
+            }
+        } catch (error) {
+            erroresMonitorMp += 1;
+            mostrarEstadoMp(`${error.message || 'Error al consultar Mercado Pago.'} La orden se conserva; no generes otra.`, true);
+            if (erroresMonitorMp >= 5) {
+                detenerMonitorMp();
+                mostrarEstadoMp('No fue posible verificar el pago. Consultá manualmente o recuperá la operación; no vuelvas a cobrar.', true);
+            }
+        } finally {
+            consultaMpEnCurso = false;
+            botonConsultarMp.disabled = false;
+            programarConsultaMp();
+        }
+    }
+
+    async function confirmarPagoMercadoPago() {
+        if (!intentoMpActual || !pagoMpVerificado || confirmacionMpEnCurso) return;
+        confirmacionMpEnCurso = true;
+        detenerMonitorMp();
+        botonConsultarMp.disabled = true;
+        mostrarEstadoMp('Pago acreditado. Revalidando con Mercado Pago y registrando venta…');
+        try {
+            const datos = await solicitarJsonMp(urlConfirmarMp, { referencia: intentoMpActual });
+            mostrarEstadoMp(datos.mensaje || 'Venta registrada correctamente.');
+            permitirSalida = true;
+            window.location.assign(datos.redirect || '/ventas');
+        } catch (error) {
+            // Una respuesta perdida no implica que la venta no se haya registrado.
+            // Nunca reintentamos automáticamente la confirmación.
+            mostrarEstadoMp(`${error.message || 'No se pudo comprobar la confirmación.'} Conservá la referencia y conciliá antes de cobrar de nuevo.`, true);
+        } finally {
+            confirmacionMpEnCurso = false;
+            botonConsultarMp.disabled = false;
+        }
+    }
+
+    async function recuperarCobroPendiente() {
+        if (!urlRecuperarMp || intentoMpActual || !csrfToken) return;
+        try {
+            const datos = await solicitarJsonMp(urlRecuperarMp, { idsucursal: Number(sucursal.value) });
+            const anterior = datos.intento;
+            if (!anterior || intentoMpActual) return;
+            // Al recuperar un QR, el selector debe reflejar el medio cobrado.
+            // No alteramos el importe persistido ni reconstruimos el carrito.
+            const opcionQr = Array.from(metodoPago.options).find(
+                (opcion) => opcion.value === '2' && !opcion.disabled
+            );
+            if (opcionQr) {
+                metodoPago.value = '2';
+                dibujarCarrito();
+            }
+            intentoMpActual = String(anterior.referencia);
+            pagoMpVerificado = false;
+            panelMp.hidden = false;
+            referenciaMp.textContent = intentoMpActual;
+            importeMp.textContent = formatoMoneda.format(Number(anterior.importe));
+            pagoIdMp.value = String(anterior.order_id);
+            enlaceMp.hidden = true;
+            mostrarEstadoMp('Orden QR recuperada después de recargar. Verificando su estado automáticamente…');
+            actualizarEstadoConfirmacion();
+            iniciarMonitorMp();
+        } catch (error) {
+            mostrarEstadoMp('No se pudo recuperar una orden previa. Si hubo un cobro, revisalo antes de generar otro.', true);
+        }
+    }
+
     async function confirmarVenta() {
         actualizarEstadoConfirmacion();
 
@@ -1305,7 +1511,7 @@
             return;
         }
 
-        if (!csrfToken || !urlGuardar) {
+        if (!csrfToken || !urlGuardar || (Number(metodoPago.value) === 2 && !urlMercadoPago)) {
             estadoConfirmacion.className = 'estado-confirmacion--error';
             estadoConfirmacion.textContent = 'No se pudo preparar el envío de la venta.';
             return;
@@ -1313,7 +1519,8 @@
 
         confirmandoVenta = true;
         botonConfirmarVenta.disabled = true;
-        botonConfirmarVenta.textContent = 'Guardando venta…';
+        const esPagoMp = Number(metodoPago.value) === 2;
+        botonConfirmarVenta.textContent = esPagoMp ? 'Preparando cobro…' : 'Guardando venta…';
         estadoConfirmacion.className = 'estado-confirmacion--procesando';
         estadoConfirmacion.textContent = 'Validando precios y stock…';
 
@@ -1322,7 +1529,26 @@
             cantidad: Number(producto.cantidad),
         }));
 
+        const datosVenta = {
+            idsucursal: Number(sucursal.value),
+            tipo_cliente: tipoCliente.value,
+            idcliente: idCliente.value === ''
+                ? null
+                : Number(idCliente.value),
+            descuento_adicional: porcentajeDescuentoAdicionalActual(),
+            idmetodopago: Number(metodoPago.value),
+            productos,
+        };
+
         try {
+            if (esPagoMp) {
+                await crearCobroMercadoPago(datosVenta);
+                confirmandoVenta = false;
+                botonConfirmarVenta.textContent = 'Confirmar venta';
+                actualizarEstadoConfirmacion();
+                return;
+            }
+
             const respuesta = await fetch(urlGuardar, {
                 method: 'POST',
                 headers: {
@@ -1331,16 +1557,7 @@
                     'X-CSRF-TOKEN': csrfToken,
                     'X-Requested-With': 'XMLHttpRequest',
                 },
-                body: JSON.stringify({
-                    idsucursal: Number(sucursal.value),
-                    tipo_cliente: tipoCliente.value,
-                    idcliente: idCliente.value === ''
-                        ? null
-                        : Number(idCliente.value),
-                    descuento_adicional: porcentajeDescuentoAdicionalActual(),
-                    idmetodopago: Number(metodoPago.value),
-                    productos,
-                }),
+                body: JSON.stringify(datosVenta),
             });
 
             const datos = await respuesta.json().catch(() => ({}));
@@ -1582,6 +1799,7 @@
         }
 
         sucursalAnterior = nuevaSucursal;
+        if (!intentoMpActual) recuperarCobroPendiente();
         carrito.clear();
         dibujarCarrito();
         codigoBarrasProducto.value = '';
@@ -1679,13 +1897,13 @@
             return;
         }
 
-        if (!hayVentaEnCurso() || permitirSalida) {
+        if ((!hayVentaEnCurso() && !intentoMpActual) || permitirSalida) {
             permitirSalida = true;
             return;
         }
 
         const salir = window.confirm(
-            'Hay productos cargados en esta venta. Si salís, se perderán. ¿Querés volver a Ventas?'
+            intentoMpActual ? 'Hay un cobro pendiente de verificar. Guardá su referencia; salir no lo cancela. ¿Querés volver a Ventas?' : 'Hay productos cargados en esta venta. Si salís, se perderán. ¿Querés volver a Ventas?'
         );
 
         if (!salir) {
@@ -1697,7 +1915,7 @@
     });
 
     window.addEventListener('beforeunload', (evento) => {
-        if (!hayVentaEnCurso() || permitirSalida) {
+        if ((!hayVentaEnCurso() && !intentoMpActual) || permitirSalida) {
             return;
         }
 
@@ -1706,7 +1924,9 @@
     });
 
     botonConfirmarVenta.addEventListener('click', confirmarVenta);
+    botonConsultarMp?.addEventListener('click', consultarEstadoMercadoPago);
 
     dibujarCarrito();
     codigoBarrasProducto.focus();
+    recuperarCobroPendiente();
 })();

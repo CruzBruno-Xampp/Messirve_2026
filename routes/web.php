@@ -19,7 +19,8 @@ use App\Http\Controllers\VentaController;
 use App\Http\Middleware\AuthenticateAdmin;
 use App\Http\Middleware\VerificarPermiso;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\MercadoPagoController;
+use App\Http\Controllers\MercadoPagoQrController;
 
 /*
 |--------------------------------------------------------------------------
@@ -788,3 +789,54 @@ Route::middleware([
             ->whereNumber('usuario')
             ->name('update');
     });
+
+
+    // Preparar una solicitud de cobro con Mercado Pago.
+Route::post(
+    '/ventas/mercadopago/preferencia',
+    [MercadoPagoController::class, 'crearPreferencia']
+)
+    ->middleware([
+        AuthenticateAdmin::class,
+        VerificarPermiso::class . ':ventas.crear',
+        'throttle:10,1',
+    ])
+    ->name('ventas.mercadopago.preferencia');
+
+    // Consultar el resultado de un cobro de Mercado Pago.
+Route::post(
+    '/ventas/mercadopago/consultar',
+    [MercadoPagoController::class, 'consultarPago']
+)
+    ->middleware([
+        AuthenticateAdmin::class,
+        VerificarPermiso::class . ':ventas.crear',
+        'throttle:20,1',
+    ])
+    ->name('ventas.mercadopago.consultar');
+
+    
+Route::post(
+    '/ventas/mercadopago/confirmar',
+    [MercadoPagoController::class, 'confirmarVenta']
+)
+    ->middleware([
+        AuthenticateAdmin::class,
+        VerificarPermiso::class . ':ventas.crear',
+        'throttle:10,1',
+    ])
+    ->name('ventas.mercadopago.confirmar');
+
+// QR estático atendido para ventas del local. Todas las rutas requieren sesión y permiso.
+Route::post('/ventas/qr/crear', [MercadoPagoQrController::class, 'crear'])
+    ->middleware([AuthenticateAdmin::class, VerificarPermiso::class . ':ventas.crear', 'throttle:10,1'])
+    ->name('ventas.qr.crear');
+Route::post('/ventas/qr/consultar', [MercadoPagoQrController::class, 'consultar'])
+    ->middleware([AuthenticateAdmin::class, VerificarPermiso::class . ':ventas.crear', 'throttle:30,1'])
+    ->name('ventas.qr.consultar');
+Route::post('/ventas/qr/confirmar', [MercadoPagoQrController::class, 'confirmar'])
+    ->middleware([AuthenticateAdmin::class, VerificarPermiso::class . ':ventas.crear', 'throttle:15,1'])
+    ->name('ventas.qr.confirmar');
+Route::post('/ventas/qr/recuperar', [MercadoPagoQrController::class, 'recuperar'])
+    ->middleware([AuthenticateAdmin::class, VerificarPermiso::class . ':ventas.crear', 'throttle:30,1'])
+    ->name('ventas.qr.recuperar');

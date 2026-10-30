@@ -1,0 +1,32 @@
+MESSIRVE - PRUEBAS QR DE SOLO LECTURA (30/10/2026)
+
+QUE HACE
+- 11 pruebas funcionales de validación de órdenes QR con datos ficticios.
+- 2 verificaciones estructurales de protecciones en el código PHP.
+- NO crea ni modifica ventas, stock o intentos en MySQL.
+- NO consulta Mercado Pago ni realiza pagos.
+- NO implementa Webhooks ni demuestra concurrencia REAL.
+
+INSTALACION
+1) Guardá una copia de seguridad del proyecto.
+2) Descomprimí el ZIP en C:\laragon\www\messirve, manteniendo carpetas.
+3) Solo agrega: phpunit.qr.xml, tests/Unit/MercadoPagoQrSeguridadTest.php,
+   herramientas/comprobar_aislamiento_qr.php. No reemplaza phpunit.xml.
+4) Detené php artisan schedule:work mientras hacés la prueba.
+
+EJECUCION EN TERMINAL DE MESSIRVE
+php herramientas/comprobar_aislamiento_qr.php
+php artisan test --configuration=phpunit.qr.xml
+
+RESULTADO ESPERADO
+13 tests pasando (depende de que el código instalado conserve las protecciones).
+Si alguno falla, guardá el mensaje y NO cambies estados ni repitas cobros.
+
+LIMITES IMPORTANTES
+La prueba de dos procesos concurrentes necesita una copia AISLADA Y COMPLETA
+ de la base de datos (hay tablas antiguas creadas sin migraciones) y un ensayo
+con conexiones MySQL independientes. No usar php artisan migrate:fresh en
+'messirve'. No afirmar que la carrera está aprobada por pasar estos 13 tests.
+
+Si las pruebas fallan por una configuración o versión distinta, no cambies
+la base principal: compartí el error y lo corregimos en el entorno de prueba.
