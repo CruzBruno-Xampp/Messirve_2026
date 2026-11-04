@@ -117,7 +117,6 @@ class VentaController extends Controller
             'zonaHoraria'
         ));
     }
-
     /**
      * Anula una venta y reintegra todas sus unidades al stock de la sucursal.
      */
@@ -275,7 +274,7 @@ class VentaController extends Controller
                             'venta' => 'No se encontró el stock original de uno de los productos para reintegrarlo.',
                         ]);
                     }
-
+                    //
                     $stock->stockactual = (int) $stock->stockactual + (int) $cantidad;
                     $stock->save();
 
@@ -288,7 +287,7 @@ class VentaController extends Controller
                     ]);
                 }
             }
-
+            //
             $ventaBloqueada->estado = 'ANULADA';
             $ventaBloqueada->save();
         }, 3);

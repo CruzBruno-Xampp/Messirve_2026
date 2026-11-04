@@ -19,7 +19,7 @@ use Throwable;
  */
 class ConciliarOrdenesQr extends Command
 {
-    protected $signature = 'messirve:conciliar-qr {--limite=25 : Máximo de órdenes por ejecución} {--simular : Consultar sin modificar la base de datos}';
+    protected $signature = 'messirve:conciliar-qr {--limite=25 : Máximo de órdenes por ejecución} {--simular : Consultar sin modificar la base de datos} {--order-id= : Conciliar únicamente una orden QR específica}';
 
     protected $description = 'Concilia órdenes QR y confirma ventas acreditadas verificadas';
 
@@ -32,14 +32,22 @@ class ConciliarOrdenesQr extends Command
         }
 
         $simular = (bool) $this->option('simular');
+        $orderId = $this->option('order-id');
+        if ($orderId !== null && (!is_string($orderId) || !preg_match('/^ORD[A-Za-z0-9]{1,77}$/', $orderId))) {
+            $this->error('El identificador de orden QR no es válido.');
+            return self::FAILURE;
+        }
 
-        $intentos = IntentoPagoMp::query()
+        $consulta = IntentoPagoMp::query()
             ->whereIn('estado', ['PENDIENTE', 'APROBADO_PENDIENTE_VENTA'])
             ->whereNull('idventa')
-            ->whereNotNull('mp_order_id')
-            ->orderBy('id')
-            ->limit($limite)
-            ->get();
+            ->whereNotNull('mp_order_id');
+
+        if ($orderId !== null) {
+            $consulta->where('mp_order_id', $orderId);
+        }
+
+        $intentos = $consulta->orderBy('id')->limit($limite)->get();
 
         $vencidos = 0;
         $pagados = 0;

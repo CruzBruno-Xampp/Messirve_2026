@@ -840,3 +840,12 @@ Route::post('/ventas/qr/confirmar', [MercadoPagoQrController::class, 'confirmar'
 Route::post('/ventas/qr/recuperar', [MercadoPagoQrController::class, 'recuperar'])
     ->middleware([AuthenticateAdmin::class, VerificarPermiso::class . ':ventas.crear', 'throttle:30,1'])
     ->name('ventas.qr.recuperar');
+
+
+// Webhook QR público: NO usa login administrativo. La firma HMAC es obligatoria.
+// La exclusión CSRF se aplica únicamente a esta ruta (Laravel clásico).
+\Illuminate\Support\Facades\Route::post('/webhooks/mercadopago/qr',
+    [\App\Http\Controllers\MercadoPagoQrWebhookController::class, 'recibir'])
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])
+    ->middleware('throttle:60,1')
+    ->name('webhooks.mercadopago.qr');

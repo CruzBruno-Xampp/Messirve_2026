@@ -21,10 +21,14 @@ return [
     ],
 
     'mercadopago' => [
-        'public_key' => env('MERCADOPAGO_PUBLIC_KEY'),
-        'access_token' => env('MERCADOPAGO_ACCESS_TOKEN'),
-        'qr_cajas' => [
-            env('MERCADOPAGO_QR_ALMAFUERTE_IDSUCURSAL') => env('MERCADOPAGO_QR_ALMAFUERTE_EXTERNAL_POS_ID'),
+    'public_key' => env('MERCADOPAGO_PUBLIC_KEY'),
+    'access_token' => env('MERCADOPAGO_ACCESS_TOKEN'),
+
+    'webhook_secret' => env('MERCADOPAGO_WEBHOOK_SECRET'),
+
+    'qr_cajas' => [
+        env('MERCADOPAGO_QR_ALMAFUERTE_IDSUCURSAL')
+            => env('MERCADOPAGO_QR_ALMAFUERTE_EXTERNAL_POS_ID'),
         ],
     ],
 
